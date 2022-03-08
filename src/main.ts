@@ -1,5 +1,3 @@
-// npm run build (dev pro kontinuální rebuildy)
-
 import { MarkdownView, Plugin } from 'obsidian';
 import LinkVerseModal from 'src/link-verse-modal';
 
@@ -15,15 +13,14 @@ export default class BibleLinkerPlugin extends Plugin {
 	// Run once when plugin is loaded
 	async onload() {
 
-		// Add icon to insert ref
+		// Add icon to insert link 
 		this.addRibbonIcon("link", "Insert bible link", (evt: MouseEvent) => this.openRefModal());
 
-		// Command to insert ref (only available in editor mode)
+		// Command to insert link (only available in editor mode)
 		this.addCommand({
 			id: 'insert-bible-link',
 			name: "Insert bible link",
 			editorCallback: this.openRefModal
 		})
-
 	}
 }
