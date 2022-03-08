@@ -25,11 +25,11 @@ export default class LinkVerseModal extends Modal {
         const { contentEl } = this;
 
         // Add heading 
-        contentEl.createEl("h3", { text: "Book reference picker" });
+        contentEl.createEl("h3", { text: "Bible linker" });
 
         // Add Textbox for reference
         new Setting(contentEl)
-            .setName("Insert refrerence")
+            .setName("Insert link")
             .addText((text) => text.onChange((value) => { this.userInput = value })
             .inputEl.focus()); // Sets focus to input field
 
