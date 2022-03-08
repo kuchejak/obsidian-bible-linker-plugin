@@ -1,0 +1,59 @@
+import { App, HeadingCache, Modal, Notice, Setting } from "obsidian";
+import convertLinkToQuote from "./convert-link";
+import { bookAndChapterRegex, multipleVersesRegEx, oneVerseRegEx } from "./link-regexes";
+
+/**
+ * Modal that lets you insert bible reference
+ */
+export default class LinkVerseModal extends Modal {
+    userInput: string
+    onSubmit: (result: string) => void
+
+    handleInput = async () => {
+        const res = await convertLinkToQuote(this.app, this.userInput)
+        if (res == "") return // invalid link
+        this.close();
+        this.onSubmit(res);
+    }
+
+    constructor(app: App, onSubmit: (result: string) => void) {
+        super(app);
+        this.onSubmit = onSubmit;
+    }
+
+    onOpen() {
+        const { contentEl } = this;
+
+        // Add heading 
+        contentEl.createEl("h3", { text: "Book reference picker" });
+
+        // Add Textbox for reference
+        new Setting(contentEl)
+            .setName("Insert refrerence")
+            .addText((text) => text.onChange((value) => { this.userInput = value })
+            .inputEl.focus()); // Sets focus to input field
+
+        // Add button for submit/exit
+        new Setting(contentEl)
+            .addButton((btn) => {
+                btn
+                    .setButtonText("Link")
+                    .setCta()
+                    .onClick(this.handleInput)
+            });
+
+        // Allow user to exit using Enter key
+        contentEl.onkeydown = (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                this.handleInput();
+            }
+        }
+    }
+
+    onClose() {
+        const { contentEl } = this;
+        contentEl.empty();
+    }
+}
+
