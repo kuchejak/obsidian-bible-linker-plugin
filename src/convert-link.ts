@@ -31,8 +31,6 @@ export default async function convertLinkToQuote(app: App, userInput: string): P
                 break;
             }
             default: {
-                console.log("1V", oneVerseRegEx)
-                console.log("MV", multipleVersesRegEx)
                 new Notice(`Wrong format "${userInput}"`)
                 return "";
             }
