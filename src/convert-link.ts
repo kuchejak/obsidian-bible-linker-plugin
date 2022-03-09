@@ -94,7 +94,8 @@ async function createQuote(app: App, tFile: TFile, userInput: string, fileName: 
     }
 
     // 1 - Link to verses
-    let res = `>[[${fileName}#${headings[beginVerse].heading}|${userInput}]] `;
+    let res = `>[[${fileName}#${headings[beginVerse].heading}|${fileName},${beginVerse}-]]` // [[Gen 1#1|Gen 1,1-]]
+    res += `[[${fileName}#${headings[endVerse].heading}|${endVerse}]]`; // [[Gen 1#3|3]]
 
     // 2 - Text of verses
     for (let i = beginVerse; i <= endVerse; i++) {

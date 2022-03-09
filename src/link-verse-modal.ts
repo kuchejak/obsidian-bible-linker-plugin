@@ -1,4 +1,4 @@
-import { App, HeadingCache, Modal, Notice, Setting } from "obsidian";
+import { App, Modal, Setting } from "obsidian";
 import convertLinkToQuote from "./convert-link";
 
 /**
