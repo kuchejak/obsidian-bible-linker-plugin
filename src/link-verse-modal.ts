@@ -1,5 +1,6 @@
 import { App, Modal, Setting } from "obsidian";
 import convertLinkToQuote from "./convert-link";
+import { PluginSettings } from "./main";
 
 /**
  * Modal that lets you insert bible reference
@@ -7,17 +8,19 @@ import convertLinkToQuote from "./convert-link";
 export default class LinkVerseModal extends Modal {
     userInput: string
     onSubmit: (result: string) => void
+    pluginSettings: PluginSettings;
 
     handleInput = async () => {
-        const res = await convertLinkToQuote(this.app, this.userInput)
+        const res = await convertLinkToQuote(this.app, this.userInput, this.pluginSettings)
         if (res == "") return // invalid link
         this.close();
         this.onSubmit(res);
     }
 
-    constructor(app: App, onSubmit: (result: string) => void) {
+    constructor(app: App, settings: PluginSettings, onSubmit: (result: string) => void) {
         super(app);
         this.onSubmit = onSubmit;
+        this.pluginSettings = settings;
     }
 
     onOpen() {

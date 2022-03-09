@@ -1,5 +1,6 @@
 import { App, HeadingCache, Notice, TFile } from "obsidian";
 import { bookAndChapterRegexForOBSK, multipleVersesRegEx, oneVerseRegEx } from "./link-regexes";
+import { PluginSettings } from "./main";
 
 
 /**
@@ -8,7 +9,7 @@ import { bookAndChapterRegexForOBSK, multipleVersesRegEx, oneVerseRegEx } from "
  * @param userInput User Input (link to verse)
  * @returns String with quote of linked verses. If converting was not successfull, returns empty string.
  */
-export default async function convertLinkToQuote(app: App, userInput: string): Promise<string> {
+export default async function convertLinkToQuote(app: App, userInput: string, settings: PluginSettings): Promise<string> {
         let bookAndChapter: string;
         let fileName: string;
         let beginVerse: number; 
@@ -43,7 +44,7 @@ export default async function convertLinkToQuote(app: App, userInput: string): P
             tFile = app.metadataCache.getFirstLinkpathDest(fileName, "/");
         }
         if (tFile) {
-            return await createQuote(app, tFile, userInput, fileName, beginVerse, endVerse);
+            return await createLinkOutput(app, tFile, userInput, fileName, beginVerse, endVerse, settings);
         }
         else {
             new Notice(`File ${bookAndChapter} not found`)
@@ -79,7 +80,7 @@ function tryConvertToOBSKFileName(bookAndChapter: string) {
     }
 }
 
-async function createQuote(app: App, tFile: TFile, userInput: string, fileName: string, beginVerse: number, endVerse: number) {
+async function createLinkOutput(app: App, tFile: TFile, userInput: string, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings) {
     const file = app.vault.read(tFile)
     const lines = (await file).split('\n')
     const headings = app.metadataCache.getFileCache(tFile).headings;
@@ -94,8 +95,14 @@ async function createQuote(app: App, tFile: TFile, userInput: string, fileName: 
     }
 
     // 1 - Link to verses
-    let res = `>[[${fileName}#${headings[beginVerse].heading}|${fileName},${beginVerse}-]]` // [[Gen 1#1|Gen 1,1-]]
-    res += `[[${fileName}#${headings[endVerse].heading}|${endVerse}]]`; // [[Gen 1#3|3]]
+    let res = settings.prefix;
+    if (settings.linkEndVerse) {
+        res += `[[${fileName}#${headings[beginVerse].heading}|${fileName},${beginVerse}-]]` // [[Gen 1#1|Gen 1,1-]]
+        res += `[[${fileName}#${headings[endVerse].heading}|${endVerse}]] `; // [[Gen 1#3|3]]
+    }
+    else {
+        res += `[[${fileName}#${headings[beginVerse].heading}|${fileName},${beginVerse}-${endVerse}]] ` // [[Gen 1#1|Gen 1,1-3]]
+    }
 
     // 2 - Text of verses
     for (let i = beginVerse; i <= endVerse; i++) {
