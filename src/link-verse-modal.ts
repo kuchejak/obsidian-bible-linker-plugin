@@ -1,6 +1,5 @@
 import { App, HeadingCache, Modal, Notice, Setting } from "obsidian";
 import convertLinkToQuote from "./convert-link";
-import { bookAndChapterRegex, multipleVersesRegEx, oneVerseRegEx } from "./link-regexes";
 
 /**
  * Modal that lets you insert bible reference

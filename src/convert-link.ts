@@ -1,5 +1,5 @@
 import { App, HeadingCache, Notice, TFile } from "obsidian";
-import { bookAndChapterRegex, multipleVersesRegEx, oneVerseRegEx } from "./link-regexes";
+import { bookAndChapterRegexForOBSK, multipleVersesRegEx, oneVerseRegEx } from "./link-regexes";
 
 
 /**
@@ -31,6 +31,8 @@ export default async function convertLinkToQuote(app: App, userInput: string): P
                 break;
             }
             default: {
+                console.log("1V", oneVerseRegEx)
+                console.log("MV", multipleVersesRegEx)
                 new Notice(`Wrong format "${userInput}"`)
                 return "";
             }
@@ -70,8 +72,8 @@ function getVerseText(verseNumber: number, headings: HeadingCache[], lines: stri
  * @returns file name in Obsidain Study Kit naming system 
  */
 function tryConvertToOBSKFileName(bookAndChapter: string) {
-    if (bookAndChapterRegex.test(bookAndChapter)) { // Valid chapter name
-        let [_, book, number] = bookAndChapter.match(bookAndChapterRegex);
+    if (bookAndChapterRegexForOBSK.test(bookAndChapter)) { // Valid chapter name
+        let [_, book, number] = bookAndChapter.match(bookAndChapterRegexForOBSK);
         if (number.length == 1) {
             number = `0${number}`
         }
