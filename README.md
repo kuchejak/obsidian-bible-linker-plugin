@@ -7,7 +7,7 @@ Plugin for easier linking of multiple bible verses in Obsdian.md note taking app
 3. Watch the magic.
 
 ## Output format
-Verses are **not** linked using `![[link]]` syntax - instead quote with text of given verses is created. Linking is done using "invisible" links after the verses (those links are visible only in source mode).
+Verses are **not** linked using `![[link]]` syntax - instead text of given verses is copied. Linking is done using "invisible" links after the verses (those links are visible only in source mode).
 
 ### Example output (input: `Gen 1,1-3`)
 ```md
@@ -48,4 +48,7 @@ This plugin requires you to have bible in markdown in your vault, with similar s
 ```
 
 ## Installing 
+Available through Obsidian Community plugins (Settings/Comumnity plugins) 
+
+### Manual install
 Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`
