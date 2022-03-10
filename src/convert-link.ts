@@ -40,7 +40,7 @@ export default async function getTextOfVerses(app: App, userInput: string, setti
                 break;
             }
             default: {
-                new Notice(`Wrong format "${userInput}"`)
+                new Notice(`Wrong format "${userInput}"`);
                 return "";
             }
         }
@@ -56,7 +56,8 @@ export default async function getTextOfVerses(app: App, userInput: string, setti
             return await createLinkOutput(app, tFile, bookAndChapter, fileName, beginVerse, endVerse, settings);
         }
         else {
-            new Notice(`File ${bookAndChapter} not found`)
+            new Notice(`File ${bookAndChapter} not found`);
+            return "";
         }
 } 
 
