@@ -4,6 +4,14 @@ import { PluginSettings } from "./main";
 
 
 /**
+ * Capitalizes given string 
+ */
+function capitalize(str: string) {
+    str = str.toLocaleLowerCase();
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
  * Converts biblical link to quotation of given verse 
  * @param app App instance
  * @param userInput User Input (link to verse)
@@ -37,6 +45,7 @@ export default async function convertLinkToQuote(app: App, userInput: string, se
             }
         }
 
+        bookAndChapter = capitalize(bookAndChapter) // For output consistency
         fileName = bookAndChapter; 
         let tFile = app.metadataCache.getFirstLinkpathDest(fileName, "/")
         if (!tFile) { // handle "Bible study kit" file naming, eg. Gen-01 instead of Gen 1
@@ -44,7 +53,7 @@ export default async function convertLinkToQuote(app: App, userInput: string, se
             tFile = app.metadataCache.getFirstLinkpathDest(fileName, "/");
         }
         if (tFile) {
-            return await createLinkOutput(app, tFile, userInput, fileName, beginVerse, endVerse, settings);
+            return await createLinkOutput(app, tFile, bookAndChapter, fileName, beginVerse, endVerse, settings);
         }
         else {
             new Notice(`File ${bookAndChapter} not found`)
@@ -80,7 +89,7 @@ function tryConvertToOBSKFileName(bookAndChapter: string) {
     }
 }
 
-async function createLinkOutput(app: App, tFile: TFile, userInput: string, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings) {
+async function createLinkOutput(app: App, tFile: TFile, userChapterInput: string, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings) {
     const file = app.vault.read(tFile)
     const lines = (await file).split('\n')
     const headings = app.metadataCache.getFileCache(tFile).headings;
@@ -97,14 +106,14 @@ async function createLinkOutput(app: App, tFile: TFile, userInput: string, fileN
     // 1 - Link to verses
     let res = settings.prefix;
     if (beginVerse === endVerse) {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${fileName}.${beginVerse}]] ` // [[Gen 1#1|Gen 1,1.1]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}.${beginVerse}]] ` // [[Gen 1#1|Gen 1,1.1]]
     }
     else if (settings.linkEndVerse) {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${fileName},${beginVerse}-]]` // [[Gen 1#1|Gen 1,1-]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput},${beginVerse}-]]` // [[Gen 1#1|Gen 1,1-]]
         res += `[[${fileName}#${headings[endVerse].heading}|${endVerse}]] `; // [[Gen 1#3|3]]
     }
     else {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${fileName},${beginVerse}-${endVerse}]] ` // [[Gen 1#1|Gen 1,1-3]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput},${beginVerse}-${endVerse}]] ` // [[Gen 1#1|Gen 1,1-3]]
     }
 
     // 2 - Text of verses
