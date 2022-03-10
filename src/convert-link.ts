@@ -17,7 +17,7 @@ function capitalize(str: string) {
  * @param userInput User Input (link to verse)
  * @returns String with quote of linked verses. If converting was not successfull, returns empty string.
  */
-export default async function convertLinkToQuote(app: App, userInput: string, settings: PluginSettings): Promise<string> {
+export default async function getTextOfVerses(app: App, userInput: string, settings: PluginSettings): Promise<string> {
         let bookAndChapter: string;
         let fileName: string;
         let beginVerse: number; 
@@ -67,7 +67,8 @@ export default async function convertLinkToQuote(app: App, userInput: string, se
  * @param lines Lines of file from which verse text should be taken.
  * @returns Text of given verse.
  */
-function getVerseText(verseNumber: number, headings: HeadingCache[], lines: string[]) {
+function getVerseText(verseNumber: number, headings: HeadingCache[], lines: string[], settings: PluginSettings) {
+        verseNumber = verseNumber + settings.verseOffset 
         if (verseNumber >= headings.length) return "" // out of range
         const headingLine = headings[verseNumber].position.start.line;
         if (headingLine + 1 >= lines.length) return "" // out of range
@@ -118,7 +119,7 @@ async function createLinkOutput(app: App, tFile: TFile, userChapterInput: string
 
     // 2 - Text of verses
     for (let i = beginVerse; i <= endVerse; i++) {
-        const verseText = getVerseText(i, headings, lines);
+        const verseText = getVerseText(i, headings, lines, settings);
         if (verseText == "") {
             new Notice("Verse text not found - invalid link or wrong file format")
             return ""

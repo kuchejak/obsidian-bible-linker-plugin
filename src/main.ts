@@ -5,11 +5,13 @@ import { SettingsTab } from './settings';
 export interface PluginSettings {
 	prefix: string;
 	linkEndVerse: boolean;
+	verseOffset: number;
 }
 
 const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 	prefix: "",
-	linkEndVerse: false
+	linkEndVerse: false,
+	verseOffset: 0
 }
 
 export default class BibleLinkerPlugin extends Plugin {

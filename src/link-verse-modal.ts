@@ -1,5 +1,5 @@
 import { App, Modal, Setting } from "obsidian";
-import convertLinkToQuote from "./convert-link";
+import getTextOfVerses from "./convert-link";
 import { PluginSettings } from "./main";
 
 /**
@@ -11,7 +11,7 @@ export default class LinkVerseModal extends Modal {
     pluginSettings: PluginSettings;
 
     handleInput = async () => {
-        const res = await convertLinkToQuote(this.app, this.userInput, this.pluginSettings)
+        const res = await getTextOfVerses(this.app, this.userInput, this.pluginSettings)
         if (res == "") return // invalid link
         this.close();
         this.onSubmit(res);
