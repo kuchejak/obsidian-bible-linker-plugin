@@ -128,7 +128,7 @@ async function createLinkOutput(app: App, tFile: TFile, userChapterInput: string
     }
 
     // 3 - Invisible links
-    if (beginVerse == endVerse) return res; // No need to add another link, when only one verse is being linked
+    if (beginVerse == endVerse || !settings.useInvisibleLinks) return res; // No need to add another link, when only one verse is being linked
     for (let i = beginVerse; i <= endVerse; i++) {
         res += `[[${fileName}#${headings[i].heading}|]]`
     }

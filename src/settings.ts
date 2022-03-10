@@ -60,5 +60,17 @@ export class SettingsTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     })
             )
+
+        new Setting(containerEl)
+            .setName("Add invisible links?")
+            .setDesc("Ivisible links are added to each verse used (so you can find the connections later), they are only visible in source mode.")
+            .addToggle((toggle) => 
+                toggle
+                    .setValue(this.plugin.settings.useInvisibleLinks)
+                    .onChange(async (value) => {
+                        this.plugin.settings.useInvisibleLinks = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
     }
 }
