@@ -96,7 +96,10 @@ async function createLinkOutput(app: App, tFile: TFile, userInput: string, fileN
 
     // 1 - Link to verses
     let res = settings.prefix;
-    if (settings.linkEndVerse) {
+    if (beginVerse === endVerse) {
+        res += `[[${fileName}#${headings[beginVerse].heading}|${fileName}.${beginVerse}]] ` // [[Gen 1#1|Gen 1,1.1]]
+    }
+    else if (settings.linkEndVerse) {
         res += `[[${fileName}#${headings[beginVerse].heading}|${fileName},${beginVerse}-]]` // [[Gen 1#1|Gen 1,1-]]
         res += `[[${fileName}#${headings[endVerse].heading}|${endVerse}]] `; // [[Gen 1#3|3]]
     }
@@ -115,6 +118,7 @@ async function createLinkOutput(app: App, tFile: TFile, userInput: string, fileN
     }
 
     // 3 - Invisible links
+    if (beginVerse == endVerse) return res; // No need to add another link, when only one verse is being linked
     for (let i = beginVerse; i <= endVerse; i++) {
         res += `[[${fileName}#${headings[i].heading}|]]`
     }
