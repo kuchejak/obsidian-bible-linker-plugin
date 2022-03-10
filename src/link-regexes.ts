@@ -3,10 +3,10 @@
 */
 
 // Link to one verse, for example "Gen 1.1" or "Gen 1:1"
-export const oneVerseRegEx = new RegExp(/([a-zA-Z0-9\s.ěščřžýáíé]+)[,#.:;](\d+)$/);
+export const oneVerseRegEx = new RegExp(/([^,:#]+)[,#.:;]\s*(\d+)\s*$/);
 
 // Link to multiple verses, for example "Gen 1,1-5"
-export const multipleVersesRegEx = new RegExp(/([a-zA-Z0-9\s.ěščřžýáíé]+)[,#.:;](\d+)\s*[-.=]\s*(\d+)$/);
+export const multipleVersesRegEx = new RegExp(/([^,:#]+)[,#.:;]\s*(\d+)\s*[-.=]\s*(\d+)\s*$/);
 
 // Book and chapter string (used for converting to bible study kit file names)
-export const bookAndChapterRegexForOBSK = /([a-zA-Z0-9\s.ěščřžýáíé]+)\s(\d+)/
+export const bookAndChapterRegexForOBSK = /([^,:#]+)\s(\d+)/
