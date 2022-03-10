@@ -4,11 +4,16 @@ import { PluginSettings } from "./main";
 
 
 /**
- * Capitalizes given string 
+ * Capitalizes given string (skips leading whitespaces and numbers)
  */
 function capitalize(str: string) {
     str = str.toLocaleLowerCase();
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    for (let i = 0; i < str.length; i++) {
+        if (/[^\s\d.,#-]/.test(str.charAt(i))) {
+            return str.slice(0, i) + str.charAt(i).toUpperCase() + str.slice(i + 1);
+        }
+    }
+    return str;
 }
 
 /**
