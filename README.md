@@ -26,16 +26,6 @@ This plugin requires you to have bible in markdown in your vault, with similar s
 - 1 file = 1 chapter
 - Verse is marked with heading (any level), verse text is on the next line after said heading 
 
-## Link format
-- File names are deduced from the link you enter:
-  - if your file is named "Gen 1", you will have to enter "Gen 1,1-4"   
-  - if your file is named "Genesis 1", you will have to enter "Genesis 1,1-4"
-  - *exception*: if your file is named "Gen-01", you can type either "Gen-01,1-4" or "Gen 1,1-4" 
-
-
-## Wrong verses are linked?
-- Go to Plugin settings and change "Verse offset" accordingly.
-
 ### Example File
 ```md
 # Name of chapter (or some other text)
@@ -51,6 +41,15 @@ This plugin requires you to have bible in markdown in your vault, with similar s
 ### verse 3
 3rd verse text
 ```
+
+## Link format
+- File names are deduced from the link you enter:
+  - if your file is named "Gen 1", you will have to enter "Gen 1,1-4"   
+  - if your file is named "Genesis 1", you will have to enter "Genesis 1,1-4"
+  - *exception*: if your file is named "Gen-01", you can type either "Gen-01,1-4" or "Gen 1,1-4" 
+
+## Wrong verses are linked?
+- Go to Plugin settings and change "Verse offset" accordingly.
 
 ## Installing 
 Available through Obsidian Community plugins (Settings/Comumnity plugins) 
