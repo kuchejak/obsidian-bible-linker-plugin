@@ -15,7 +15,7 @@ Verses are **not** linked using `![[link]]` syntax - instead text of given verse
 ```
 
 ### Pros of this approach
-- More verses can be displayed as one block of text, which is more visually pleasing that multiple link blocks after each other. 
+- More verses can be displayed as one block of text, which is more visually pleasing than multiple link blocks after each other. 
 - You can edit the text if you want (for example add some in-line notes, bold important part...)
 
 ### Other output formats
