@@ -56,4 +56,4 @@ This plugin requires you to have bible in markdown in your vault, with similar s
 Available through Obsidian Community plugins (Settings/Comumnity plugins) 
 
 ### Manual install
-Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`
+Copy over `main.js`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`
