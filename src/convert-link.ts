@@ -98,7 +98,7 @@ function tryConvertToOBSKFileName(bookAndChapter: string) {
 
 async function createLinkOutput(app: App, tFile: TFile, userChapterInput: string, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings) {
     const file = app.vault.read(tFile)
-    const lines = (await file).split('\n')
+    const lines = (await file).split(/\r?\n/g)
     const headings = app.metadataCache.getFileCache(tFile).headings;
 
     if (beginVerse > endVerse) {
