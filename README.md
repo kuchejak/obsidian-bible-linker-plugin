@@ -24,6 +24,7 @@ Other output formats may be added later, but I don't have enough time to do it n
 ## Requirements 
 This plugin requires you to have bible in markdown in your vault, with similar structure to [Obsidian bible study kit](https://forum.obsidian.md/t/bible-study-in-obsidian-kit-including-the-bible-in-markdown/12503) - that is:
 - 1 file = 1 chapter
+- All verses of given chapter are present
 - Verse is marked with heading (any level), verse text is on the next line after said heading 
 
 ### Example File
