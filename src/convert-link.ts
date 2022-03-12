@@ -73,8 +73,7 @@ export default async function getTextOfVerses(app: App, userInput: string, setti
  * @param lines Lines of file from which verse text should be taken.
  * @returns Text of given verse.
  */
-function getVerseText(verseNumber: number, headings: HeadingCache[], lines: string[], settings: PluginSettings) {
-        verseNumber = verseNumber + settings.verseOffset 
+function getVerseText(verseNumber: number, headings: HeadingCache[], lines: string[]) {
         if (verseNumber >= headings.length) return "" // out of range
         const headingLine = headings[verseNumber].position.start.line;
         if (headingLine + 1 >= lines.length) return "" // out of range
@@ -98,8 +97,13 @@ function tryConvertToOBSKFileName(bookAndChapter: string) {
 
 async function createLinkOutput(app: App, tFile: TFile, userChapterInput: string, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings) {
     const file = app.vault.read(tFile)
-    const lines = (await file).split(/\r?\n/g)
+    const lines = (await file).split(/\r?\n/)
     const headings = app.metadataCache.getFileCache(tFile).headings;
+    const beginVerseNoOffset = beginVerse
+    const endVerseNoOffset = endVerse
+    beginVerse += settings.verseOffset
+    endVerse += settings.verseOffset
+
 
     if (beginVerse > endVerse) {
         new Notice("Begin verse is bigger than end verse")
@@ -113,14 +117,14 @@ async function createLinkOutput(app: App, tFile: TFile, userChapterInput: string
     // 1 - Link to verses
     let res = settings.prefix;
     if (beginVerse === endVerse) {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}.${beginVerse}]] ` // [[Gen 1#1|Gen 1,1.1]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}.${beginVerseNoOffset}]] ` // [[Gen 1#1|Gen 1,1.1]]
     }
     else if (settings.linkEndVerse) {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput},${beginVerse}-]]` // [[Gen 1#1|Gen 1,1-]]
-        res += `[[${fileName}#${headings[endVerse].heading}|${endVerse}]] `; // [[Gen 1#3|3]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput},${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
+        res += `[[${fileName}#${headings[endVerse].heading}|${endVerseNoOffset}]] `; // [[Gen 1#3|3]]
     }
     else {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput},${beginVerse}-${endVerse}]] ` // [[Gen 1#1|Gen 1,1-3]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput},${beginVerseNoOffset}-${endVerseNoOffset}]] ` // [[Gen 1#1|Gen 1,1-3]]
     }
 
     // 2 - Text of verses
