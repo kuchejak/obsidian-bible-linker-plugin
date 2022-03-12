@@ -15,7 +15,7 @@ Verses are **not** linked using `![[link]]` syntax - instead text of given verse
 ```
 
 ### Pros of this approach
-- More verses can be displayed as one block of text, which is more visually pleasing that multiple link blocks after each other. 
+- More verses can be displayed as one block of text, which is more visually pleasing than multiple link blocks after each other. 
 - You can edit the text if you want (for example add some in-line notes, bold important part...)
 
 ### Other output formats
@@ -24,17 +24,8 @@ Other output formats may be added later, but I don't have enough time to do it n
 ## Requirements 
 This plugin requires you to have bible in markdown in your vault, with similar structure to [Obsidian bible study kit](https://forum.obsidian.md/t/bible-study-in-obsidian-kit-including-the-bible-in-markdown/12503) - that is:
 - 1 file = 1 chapter
+- All verses of given chapter are present
 - Verse is marked with heading (any level), verse text is on the next line after said heading 
-
-## Link format
-- File names are deduced from the link you enter:
-  - if your file is named "Gen 1", you will have to enter "Gen 1,1-4"   
-  - if your file is named "Genesis 1", you will have to enter "Genesis 1,1-4"
-  - *exception*: if your file is named "Gen-01", you can type either "Gen-01,1-4" or "Gen 1,1-4" 
-
-
-## Wrong verses are linked?
-- Go to Plugin settings and change "Verse offset" accordingly.
 
 ### Example File
 ```md
@@ -51,6 +42,15 @@ This plugin requires you to have bible in markdown in your vault, with similar s
 ### verse 3
 3rd verse text
 ```
+
+## Link format
+- File names are deduced from the link you enter:
+  - if your file is named "Gen 1", you will have to enter "Gen 1,1-4"   
+  - if your file is named "Genesis 1", you will have to enter "Genesis 1,1-4"
+  - *exception*: if your file is named "Gen-01", you can type either "Gen-01,1-4" or "Gen 1,1-4" 
+
+## Wrong verses are linked?
+- Go to Plugin settings and change "Verse offset" accordingly.
 
 ## Installing 
 Available through Obsidian Community plugins (Settings/Comumnity plugins) 
