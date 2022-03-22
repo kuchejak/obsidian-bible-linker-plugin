@@ -129,12 +129,16 @@ async function createLinkOutput(app: App, tFile: TFile, userChapterInput: string
 
     // 2 - Text of verses
     for (let i = beginVerse; i <= endVerse; i++) {
-        const verseText = getVerseText(i, headings, lines, settings);
+        const verseText = getVerseText(i, headings, lines);
         if (verseText == "") {
             new Notice("Verse text not found - invalid link or wrong file format")
             return ""
-        } 
-        res += verseText + " ";
+        }
+		if(settings.newLines) {
+			res += "\n" + settings.prefix + verseText + " ";
+		} else {
+			res += verseText + " ";
+		}
     }
 
     // 3 - Invisible links

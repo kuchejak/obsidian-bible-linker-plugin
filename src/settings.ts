@@ -72,5 +72,17 @@ export class SettingsTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     })
             )
+
+        new Setting(containerEl)
+            .setName("Each verse on new line")
+            .setDesc("Each verse is inserted on a new line (with Prefix).")
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.newLines)
+                    .onChange(async (value) => {
+                        this.plugin.settings.newLines = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
     }
 }
