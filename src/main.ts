@@ -7,13 +7,15 @@ export interface PluginSettings {
 	linkEndVerse: boolean;
 	verseOffset: number;
 	useInvisibleLinks: boolean;
+	newLines: boolean;
 }
 
 const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 	prefix: "",
 	linkEndVerse: false,
 	verseOffset: 0,
-	useInvisibleLinks: true
+	useInvisibleLinks: true,
+	newLines: false
 }
 
 export default class BibleLinkerPlugin extends Plugin {

@@ -49,11 +49,11 @@ This plugin requires you to have bible in markdown in your vault, with similar s
   - if your file is named "Genesis 1", you will have to enter "Genesis 1,1-4"
   - *exception*: if your file is named "Gen-01", you can type either "Gen-01,1-4" or "Gen 1,1-4" 
 
-## Wrong verses are linked?
-- Go to Plugin settings and change "Verse offset" accordingly.
+## Wrong verses are linked? Or linking doesn't work and you have files with right format?
+- Go to Plugin settings and try changing "Verse offset" accordingly.
 
 ## Installing 
 Available through Obsidian Community plugins (Settings/Comumnity plugins) 
 
 ### Manual install
-Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`
+Copy over `main.js`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`
