@@ -134,9 +134,10 @@ async function createLinkOutput(app: App, tFile: TFile, userChapterInput: string
             new Notice("Verse text not found - invalid link or wrong file format")
             return ""
         }
-		if(settings.newLines) {
+		if (settings.newLines) {
 			res += "\n" + settings.prefix + verseText + " ";
-		} else {
+		} 
+        else {
 			res += verseText + " ";
 		}
     }

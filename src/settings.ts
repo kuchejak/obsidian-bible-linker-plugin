@@ -74,8 +74,8 @@ export class SettingsTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
-            .setName("Each verse on new line")
-            .setDesc("Each verse is inserted on a new line (with Prefix).")
+            .setName("Put each verse on a new line?")
+            .setDesc("Each verse is inserted on a new line (with Link prefix).")
             .addToggle((toggle) =>
                 toggle
                     .setValue(this.plugin.settings.newLines)
