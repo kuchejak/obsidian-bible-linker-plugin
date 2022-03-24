@@ -21,13 +21,24 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 export default class BibleLinkerPlugin extends Plugin {
 	settings: PluginSettings;
 
-	openRefModal = () => {
+	// Opens modal for text copying
+	openCopyModal = () => {
 		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 		if (view) {
 			new LinkVerseModal(this.app, this.settings, 
 				(str) => view.editor.replaceRange(str, view.editor.getCursor())).open();
 		}
 	}
+
+	// Opens modal for creating obsidian links
+	openObsidianLinkModal = () => {
+		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+		if (view) {
+			new LinkVerseModal(this.app, this.settings, 
+				(str) => view.editor.replaceRange(str, view.editor.getCursor())).open();
+		}
+	}
+
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
@@ -44,13 +55,20 @@ export default class BibleLinkerPlugin extends Plugin {
 		this.addSettingTab(new SettingsTab(this.app, this))
 
 		// Add icon to insert link 
-		this.addRibbonIcon("link", "Insert bible link", (evt: MouseEvent) => this.openRefModal());
+		this.addRibbonIcon("link", "Insert bible link", (evt: MouseEvent) => this.openCopyModal());
 
 		// Command to insert link (only available in editor mode)
 		this.addCommand({
-			id: 'insert-bible-link',
-			name: "Insert bible link",
-			editorCallback: this.openRefModal
+			id: 'insert-bible-link', // ID left to preserve user's key mappings
+			name: "Copy bible verses",
+			editorCallback: this.openCopyModal
+		})
+
+		// Command to insert link (only available in editor mode)
+		this.addCommand({
+			id: 'insert-bible-link-obsidian-link',
+			name: "Create obsidian links to bible verses",
+			editorCallback: this.openObsidianLinkModal
 		})
 	}
 }

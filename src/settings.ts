@@ -18,6 +18,11 @@ export class SettingsTab extends PluginSettingTab {
         containerEl.empty();
         
         new Setting(containerEl)
+            .setHeading()
+            .setName("Copy bible verses settings")
+            
+        
+        new Setting(containerEl)
             .setName("Verse offset")
             .setDesc('Change this if wrong verses are being linked, e.g. you want "Gen 1,1-3" but output is text from verses 2-4 → set this to -1')
             .addText((inputBox) => 
