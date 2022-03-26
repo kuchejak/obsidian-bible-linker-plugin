@@ -31,14 +31,14 @@ export default async function getTextOfVerses(app: App, userInput: string, setti
         // Parse user input
         switch (true) {
             case oneVerseRegEx.test(userInput): { // one verse
-                const [_, matchedChapter, matchedVerse] = userInput.match(oneVerseRegEx) 
+                const [, matchedChapter, matchedVerse] = userInput.match(oneVerseRegEx) 
                 bookAndChapter = matchedChapter;
                 beginVerse = Number(matchedVerse);
                 endVerse = Number(matchedVerse);
                 break;
             }
             case multipleVersesRegEx.test(userInput): { // multiple verses, one chapter
-                const [_, matchedChapter, matchedBeginVerse, matchedEndVerse] = userInput.match(multipleVersesRegEx)
+                const [, matchedChapter, matchedBeginVerse, matchedEndVerse] = userInput.match(multipleVersesRegEx)
                 bookAndChapter = matchedChapter;
                 beginVerse = Number(matchedBeginVerse);
                 endVerse = Number(matchedEndVerse);
