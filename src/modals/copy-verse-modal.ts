@@ -1,20 +1,24 @@
 import { App, Modal, Setting } from "obsidian";
-import getTextOfVerses from "./convert-link";
-import { PluginSettings } from "./main";
+import { getTextOfVerses } from "../utils/convert-link";
+import { PluginSettings } from "../main";
 
 /**
- * Modal that lets you insert bible reference
+ * Modal that lets you insert bible reference by copying text of given verses
  */
-export default class LinkVerseModal extends Modal {
+export default class CopyVerseModal extends Modal {
     userInput: string
     onSubmit: (result: string) => void
     pluginSettings: PluginSettings;
 
     handleInput = async () => {
-        const res = await getTextOfVerses(this.app, this.userInput, this.pluginSettings)
-        if (res == "") return // invalid link
+        try {
+        const res = await getTextOfVerses(this.app, this.userInput, this.pluginSettings);
         this.close();
         this.onSubmit(res);
+        }
+        catch (err) {
+            return;
+        }
     }
 
     constructor(app: App, settings: PluginSettings, onSubmit: (result: string) => void) {
@@ -27,11 +31,11 @@ export default class LinkVerseModal extends Modal {
         const { contentEl } = this;
 
         // Add heading 
-        contentEl.createEl("h3", { text: "Bible linker" });
+        contentEl.createEl("h3", { text: "Copy verse by bible reference" });
 
         // Add Textbox for reference
         new Setting(contentEl)
-            .setName("Insert link")
+            .setName("Insert reference")
             .addText((text) => text.onChange((value) => { this.userInput = value })
             .inputEl.focus()); // Sets focus to input field
 
