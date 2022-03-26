@@ -1,13 +1,21 @@
 import { MarkdownView, Plugin } from 'obsidian';
-import LinkVerseModal from 'src/link-verse-modal';
+import CopyVerseModal from 'src/modals/copy-verse-modal';
+import LinkVerseModal, { LinkType } from './modals/link-verse-modal';
 import { SettingsTab } from './settings';
 
 export interface PluginSettings {
+	// Copy
 	prefix: string;
 	linkEndVerse: boolean;
 	verseOffset: number;
 	useInvisibleLinks: boolean;
 	newLines: boolean;
+
+	// Link
+	verifyFilesWhenLinking: boolean;
+	versePrefix: string;
+	linkTypePreset: LinkType;
+	newLinePreset: boolean;
 }
 
 const DEFAULT_SETTINGS: Partial<PluginSettings> = {
@@ -15,7 +23,11 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 	linkEndVerse: false,
 	verseOffset: 0,
 	useInvisibleLinks: true,
-	newLines: false
+	newLines: false,
+	verifyFilesWhenLinking: false,
+	versePrefix: "",
+	linkTypePreset: LinkType.Basic,
+	newLinePreset: true
 }
 
 export default class BibleLinkerPlugin extends Plugin {
@@ -25,7 +37,7 @@ export default class BibleLinkerPlugin extends Plugin {
 	openCopyModal = () => {
 		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 		if (view) {
-			new LinkVerseModal(this.app, this.settings, 
+			new CopyVerseModal(this.app, this.settings, 
 				(str) => view.editor.replaceRange(str, view.editor.getCursor())).open();
 		}
 	}
@@ -55,7 +67,7 @@ export default class BibleLinkerPlugin extends Plugin {
 		this.addSettingTab(new SettingsTab(this.app, this))
 
 		// Add icon to insert link 
-		this.addRibbonIcon("link", "Insert bible link", (evt: MouseEvent) => this.openCopyModal());
+		// this.addRibbonIcon("link", "Insert bible link", (evt: MouseEvent) => this.openCopyModal());
 
 		// Command to insert link (only available in editor mode)
 		this.addCommand({

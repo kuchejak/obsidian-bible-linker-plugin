@@ -1,5 +1,6 @@
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 import BibleLinkerPlugin from "./main";
+import { LinkType } from "./modals/link-verse-modal";
 
 /**
  * Settings for plugin
@@ -13,7 +14,7 @@ export class SettingsTab extends PluginSettingTab {
     }
 
     display() {
-        let { containerEl } = this;
+        const { containerEl } = this;
 
         containerEl.empty();
         
@@ -29,7 +30,7 @@ export class SettingsTab extends PluginSettingTab {
                 inputBox
                     .setValue(this.plugin.settings.verseOffset.toString())
                     .onChange(async (value) => {
-                        let number = Number.parseInt(value);
+                        const number = Number.parseInt(value);
                         if (value === "-") return;
                         if (Number.isNaN(number)) {
                             new Notice("Invalid input, please insert valid integer");
@@ -86,6 +87,61 @@ export class SettingsTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.newLines)
                     .onChange(async (value) => {
                         this.plugin.settings.newLines = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
+
+        new Setting(containerEl)
+            .setHeading()
+            .setName("Create obsidian links to bible verses settings")
+
+        new Setting(containerEl)
+            .setName("Verify files?")
+            .setDesc("Verify existence of files you are trying to link, so that you are not inserting wrong references by mistake.")
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.verifyFilesWhenLinking)
+                    .onChange(async (value) => {
+                        this.plugin.settings.verifyFilesWhenLinking = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
+
+        new Setting(containerEl)
+            .setName("Verse prefix")
+            .setDesc('Fill this if you are using verse prefixes in your bible files, e.g. you have "v1" in your file → set to "v".')
+            .addText((inputBox) =>
+                inputBox    
+                    .setPlaceholder("Insert prefix here")
+                    .setValue(this.plugin.settings.versePrefix)
+                    .onChange(async (value) => {
+                        this.plugin.settings.versePrefix = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
+
+        new Setting(containerEl)
+            .setName("Link type default value")
+            .setDesc("Value that will be selected by default in link modal.")
+            .addDropdown((dropdown) => {
+                dropdown.addOption(LinkType.Basic, LinkType.Basic)
+                dropdown.addOption(LinkType.Embedded, LinkType.Embedded)
+                dropdown.addOption(LinkType.Invisible, LinkType.Invisible)
+                dropdown.setValue(this.plugin.settings.linkTypePreset)
+                dropdown.onChange(async (value) => {
+                    this.plugin.settings.linkTypePreset = value as LinkType;
+                    await this.plugin.saveSettings;
+                })
+            })
+
+        new Setting(containerEl)
+            .setName("Use new lines default value")
+            .setDesc("Value that will be selected by default in link modal.")
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.newLinePreset)
+                    .onChange(async (value) => {
+                        this.plugin.settings.newLinePreset = value;
                         await this.plugin.saveSettings();
                     })
             )
