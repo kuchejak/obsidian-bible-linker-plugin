@@ -21,7 +21,7 @@ Note that linking is done using "invisible" links after the verses (those links 
 
 
 ## Create obsidian links to bible verses command
-Simpler command that only creates obsidian links based on input. You can choose if you want standard links (e.g. [[Gen-01#v1]]), embedded links (e.g. ![[Gen-01#v1]]) or links invisible in the preview mode (e.g. [[Gen-01#v1|]]). This command is less powerful, but it also has looser requirements for your bible files, so you can use it even when the copy command does not work.  
+Simpler command that only creates obsidian links based on input. You can choose if you want standard links (e.g. `[[Gen-01#v1]]`), embedded links (e.g. `![[Gen-01#v1]]`) or links invisible in the preview mode (e.g. `[[Gen-01#v1|]]`). This command is less powerful, but it also has looser requirements for your bible files, so you can use it even when the copy command does not work.  
 
 ![obrazek](https://user-images.githubusercontent.com/94016085/160867853-5bff3b17-d8a7-4ec9-8672-eb1fa3acc88c.png)
 
