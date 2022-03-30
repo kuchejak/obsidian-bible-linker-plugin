@@ -69,7 +69,7 @@ export class SettingsTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName("Add invisible links?")
-            .setDesc("Ivisible links are added to each verse used (so you can find the connections later), they are only visible in source mode.")
+            .setDesc("Invisible links are added to each verse used (so you can find the connections later), they are only visible in source mode.")
             .addToggle((toggle) => 
                 toggle
                     .setValue(this.plugin.settings.useInvisibleLinks)
@@ -94,6 +94,19 @@ export class SettingsTab extends PluginSettingTab {
         new Setting(containerEl)
             .setHeading()
             .setName("Create obsidian links to bible verses settings")
+
+        new Setting(containerEl)
+            .setName("Link separator")
+            .setDesc("This is the separator that will be used when linking, e.g. if you enter '#' here, output will be [[Gen 1#1]]. If you are using headings to mark verses, use '#'. If you are using block references, use '^'.")
+            .addText((inputBox) =>
+                inputBox    
+                    .setPlaceholder("Insert separator here")
+                    .setValue(this.plugin.settings.linkSeparator)
+                    .onChange(async (value) => {
+                        this.plugin.settings.linkSeparator = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
 
         new Setting(containerEl)
             .setName("Verify files?")
@@ -145,5 +158,6 @@ export class SettingsTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     })
             )
+
     }
 }

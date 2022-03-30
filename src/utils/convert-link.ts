@@ -36,7 +36,7 @@ export async function getLinksToVerses(app: App, userInput: string, linkType: Li
     const beginning = linkType === LinkType.Embedded ? "!" : "";
     const ending = linkType === LinkType.Invisible ? "|" : "";
     for (let i = beginVerse; i <= endVerse; i++) {
-        res += `${beginning}[[${bookAndChapter}#${settings.versePrefix}${i}${ending}]]`
+        res += `${beginning}[[${bookAndChapter}${settings.linkSeparator}${settings.versePrefix}${i}${ending}]]`
         if (useNewLine) {
             res += '\n'
         }

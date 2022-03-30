@@ -42,7 +42,7 @@ export default class LinkVerseModal extends Modal {
         const { contentEl } = this;
 
         // Add heading 
-        contentEl.createEl("h3", { text: "Create obsidian links from bible reference" });
+        contentEl.createEl("h3", { text: "Create Obsidian links from Bible reference" });
 
         // Add Textbox for reference
         new Setting(contentEl)

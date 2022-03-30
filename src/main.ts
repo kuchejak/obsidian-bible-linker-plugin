@@ -16,6 +16,7 @@ export interface PluginSettings {
 	versePrefix: string;
 	linkTypePreset: LinkType;
 	newLinePreset: boolean;
+	linkSeparator: string;
 }
 
 const DEFAULT_SETTINGS: Partial<PluginSettings> = {
@@ -27,7 +28,8 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 	verifyFilesWhenLinking: false,
 	versePrefix: "",
 	linkTypePreset: LinkType.Basic,
-	newLinePreset: true
+	newLinePreset: true,
+	linkSeparator: "#"
 }
 
 export default class BibleLinkerPlugin extends Plugin {
@@ -72,14 +74,14 @@ export default class BibleLinkerPlugin extends Plugin {
 		// Command to insert link (only available in editor mode)
 		this.addCommand({
 			id: 'insert-bible-link', // ID left to preserve user's key mappings
-			name: "Copy bible verses",
+			name: "Copy Bible verses",
 			editorCallback: this.openCopyModal
 		})
 
 		// Command to insert link (only available in editor mode)
 		this.addCommand({
 			id: 'insert-bible-link-obsidian-link',
-			name: "Create obsidian links to bible verses",
+			name: "Create Obsidian links to Bible verses",
 			editorCallback: this.openObsidianLinkModal
 		})
 	}
