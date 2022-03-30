@@ -27,12 +27,16 @@ Simpler command that only creates obsidian links based on input. You can choose 
 
 
 ## Requirements 
-**Copy command** requires you to have bible in markdown in your vault, with similar structure to [Obsidian bible study kit](https://forum.obsidian.md/t/bible-study-in-obsidian-kit-including-the-bible-in-markdown/12503) - that is:
+### Link command
+Basically no requirements, it just parses your input and creates links based on it. If it does not do what you want, look into the settings.
+
+### Copy command 
+Requires you to have bible in markdown in your vault, with similar structure to [Obsidian bible study kit](https://forum.obsidian.md/t/bible-study-in-obsidian-kit-including-the-bible-in-markdown/12503) - that is:
 - 1 file = 1 chapter
 - All verses of given chapter are present
 - Verse is marked with heading (any level), verse text is on the next line after said heading
 
-### Example File
+#### Example File
 ```md
 # Name of chapter (or some other text)
 
