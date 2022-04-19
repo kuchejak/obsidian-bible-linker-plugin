@@ -10,6 +10,7 @@ export interface PluginSettings {
 	verseOffset: number;
 	useInvisibleLinks: boolean;
 	newLines: boolean;
+	eachVersePrefix: string;
 
 	// Link
 	verifyFilesWhenLinking: boolean;
@@ -25,6 +26,7 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 	verseOffset: 0,
 	useInvisibleLinks: true,
 	newLines: false,
+	eachVersePrefix: "",
 	verifyFilesWhenLinking: false,
 	versePrefix: "",
 	linkTypePreset: LinkType.Basic,
