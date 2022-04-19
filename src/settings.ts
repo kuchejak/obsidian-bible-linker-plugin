@@ -56,6 +56,19 @@ export class SettingsTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
+            .setName("Each verse prefix")
+            .setDesc("String inserted in front of every copied verse. You can use \"{n}\" where you want number of given verse inserted, for example \"**{n}** \" will make each verse start with bold verse number. Leave empty for no prefix.")
+            .addText((inputBox) =>
+                inputBox    
+                    .setPlaceholder("Insert prefix here")
+                    .setValue(this.plugin.settings.eachVersePrefix)
+                    .onChange(async (value) => {
+                        this.plugin.settings.eachVersePrefix = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
+
+        new Setting(containerEl)
             .setName("Link to last verse?")
             .setDesc("Should last verse be linked in the visible link before text of verses?")
             .addToggle((toggle) => 
