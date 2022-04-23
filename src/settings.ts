@@ -174,7 +174,7 @@ export class SettingsTab extends PluginSettingTab {
                 dropdown.setValue(this.plugin.settings.linkTypePreset)
                 dropdown.onChange(async (value) => {
                     this.plugin.settings.linkTypePreset = value as LinkType;
-                    await this.plugin.saveSettings;
+                    await this.plugin.saveSettings();
                 })
             })
 
