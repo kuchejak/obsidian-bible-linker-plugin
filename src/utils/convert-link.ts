@@ -156,7 +156,8 @@ function tryConvertToOBSKFileName(bookAndChapter: string) {
 async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings) {
     const file = app.vault.read(tFile)
     const lines = (await file).split(/\r?\n/)
-    const headings = app.metadataCache.getFileCache(tFile).headings;
+	const verseHeadingLevel = settings.verseHeadingLevel.length
+    const headings = app.metadataCache.getFileCache(tFile).headings.filter(heading => !verseHeadingLevel || heading.level === verseHeadingLevel)
     const beginVerseNoOffset = beginVerse
     const endVerseNoOffset = endVerse
     beginVerse += settings.verseOffset

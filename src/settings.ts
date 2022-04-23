@@ -42,6 +42,19 @@ export class SettingsTab extends PluginSettingTab {
                     })
             )
 
+		new Setting(containerEl)
+			.setName("Verse heading level")
+			.setDesc('If set, only headings of specified level are considered verses (if first heading of this level is always a verse, also set "Verse offset" to -1)')
+			.addText((inputBox) =>
+				inputBox
+					.setPlaceholder('e.g. "######"')
+					.setValue(this.plugin.settings.verseHeadingLevel)
+					.onChange(async (value) => {
+						this.plugin.settings.verseHeadingLevel = value;
+						await this.plugin.saveSettings();
+					})
+			)
+
         new Setting(containerEl)
             .setName("Link prefix")
             .setDesc("String inserted in front of linked verses, for example '>' for quote. Leave empty for no prefix.")
