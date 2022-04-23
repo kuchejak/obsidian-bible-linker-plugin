@@ -8,7 +8,7 @@ export interface PluginSettings {
 	prefix: string;
 	linkEndVerse: boolean;
 	verseOffset: number;
-	verseHeadingLevel: string;
+	verseHeadingLevel?: number;
 	useInvisibleLinks: boolean;
 	newLines: boolean;
 	eachVersePrefix: string;
@@ -25,7 +25,7 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 	prefix: "",
 	linkEndVerse: false,
 	verseOffset: 0,
-	verseHeadingLevel: "",
+	verseHeadingLevel: undefined,
 	useInvisibleLinks: true,
 	newLines: false,
 	eachVersePrefix: "",
