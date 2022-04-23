@@ -134,7 +134,7 @@ function getVerseText(verseNumber: number, headings: HeadingCache[], lines: stri
             new Notice("Logical error - please create issue on plugin's GitHub with your input and the file you were referencing. Thank you!")
             throw `HeadingLine ${headingLine + 1} is out of range of lines with length ${lines}`
         }
-        return lines[headingLine + 1] 
+        return lines[headingLine + 1] || lines[headingLine + 2]
 }
 
 /**
