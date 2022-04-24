@@ -42,6 +42,24 @@ export class SettingsTab extends PluginSettingTab {
                     })
             )
 
+		new Setting(containerEl)
+			.setName("Verse heading level")
+			.setDesc('If set, only headings of specified level are considered verses (if first heading of this level is always a verse, also set "Verse offset" to -1)')
+			.addDropdown((dropdown) => {
+				dropdown.addOption("any", "any")
+				dropdown.addOption("6", "######")
+				dropdown.addOption("5", "#####")
+				dropdown.addOption("4", "####")
+				dropdown.addOption("3", "###")
+				dropdown.addOption("2", "##")
+				dropdown.addOption("1", "#")
+				dropdown.setValue(this.plugin.settings.verseHeadingLevel?.toString() ?? "any")
+				dropdown.onChange(async (value) => {
+					this.plugin.settings.verseHeadingLevel = value === "any" ? undefined : Number(value);
+					await this.plugin.saveSettings();
+				})
+			})
+
         new Setting(containerEl)
             .setName("Link prefix")
             .setDesc("String inserted in front of linked verses, for example '>' for quote. Leave empty for no prefix.")
@@ -156,7 +174,7 @@ export class SettingsTab extends PluginSettingTab {
                 dropdown.setValue(this.plugin.settings.linkTypePreset)
                 dropdown.onChange(async (value) => {
                     this.plugin.settings.linkTypePreset = value as LinkType;
-                    await this.plugin.saveSettings;
+                    await this.plugin.saveSettings();
                 })
             })
 

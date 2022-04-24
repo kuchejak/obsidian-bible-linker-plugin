@@ -134,7 +134,7 @@ function getVerseText(verseNumber: number, headings: HeadingCache[], lines: stri
             new Notice("Logical error - please create issue on plugin's GitHub with your input and the file you were referencing. Thank you!")
             throw `HeadingLine ${headingLine + 1} is out of range of lines with length ${lines}`
         }
-        return lines[headingLine + 1] 
+        return lines[headingLine + 1] || lines[headingLine + 2]
 }
 
 /**
@@ -156,7 +156,8 @@ function tryConvertToOBSKFileName(bookAndChapter: string) {
 async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings) {
     const file = app.vault.read(tFile)
     const lines = (await file).split(/\r?\n/)
-    const headings = app.metadataCache.getFileCache(tFile).headings;
+	const verseHeadingLevel = settings.verseHeadingLevel
+    const headings = app.metadataCache.getFileCache(tFile).headings.filter(heading => !verseHeadingLevel || heading.level === verseHeadingLevel)
     const beginVerseNoOffset = beginVerse
     const endVerseNoOffset = endVerse
     beginVerse += settings.verseOffset
