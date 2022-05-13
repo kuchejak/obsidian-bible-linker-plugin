@@ -122,19 +122,44 @@ function capitalize(str: string) {
  * @param verseNumber Number of desired verse.
  * @param headings List of headings that should be searched. Second heading must correspond to first verse, third heading to second verse and so on. 
  * @param lines Lines of file from which verse text should be taken.
+ * @param keepNewlines If set to true, text will contain newlines if present in source, if set to false, newlines will be changed to spaces
+ * @param newLinePrefix Prefix for each line of verse, if verse is multiline and keepNewLines = true
  * @returns Text of given verse.
  */
-function getVerseText(verseNumber: number, headings: HeadingCache[], lines: string[]) {
-        if (verseNumber >= headings.length) { // out of range
-            new Notice("Verse out of range for given file")
-            throw `VerseNumber ${verseNumber} is out of range of headings with length ${headings.length}`
-        } 
-        const headingLine = headings[verseNumber].position.start.line;
-        if (headingLine + 1 >= lines.length) { // out of range
-            new Notice("Logical error - please create issue on plugin's GitHub with your input and the file you were referencing. Thank you!")
-            throw `HeadingLine ${headingLine + 1} is out of range of lines with length ${lines}`
+function getVerseText(verseNumber: number, headings: HeadingCache[], lines: string[], keepNewlines: boolean, newLinePrefix: string) {
+    if (verseNumber >= headings.length) { // out of range
+        new Notice("Verse out of range for given file")
+        throw `VerseNumber ${verseNumber} is out of range of headings with length ${headings.length}`
+    } 
+
+    const headingLine = headings[verseNumber].position.start.line;
+    if (headingLine + 1 >= lines.length) { // out of range
+        new Notice("Logical error - please create issue on plugin's GitHub with your input and the file you were referencing. Thank you!")
+        throw `HeadingLine ${headingLine + 1} is out of range of lines with length ${lines}`
+    }
+
+    // This part is necessary for verses that span over multiple lines
+    let output = "";
+    let line = "";
+    let i = 1; 
+    let isFirst = true;
+
+    // eslint-disable-next-line no-constant-condition
+    while(true) {
+        line = lines[headingLine + i]; // get next line
+        if (/#/.test(line) || (!line && !isFirst)) {
+            break; // heading line (next verse) or empty line after verse => do not continue
         }
-        return lines[headingLine + 1] || lines[headingLine + 2]
+        i++;
+        if (line) { // if line has content (is not empty string)
+            if (!isFirst) { // If it is not first line of the verse, add divider
+                output += keepNewlines ? `\n${newLinePrefix}` : " ";
+            }
+            isFirst = false;
+            output += line;
+        }
+    } 
+    return output;
 }
 
 /**
@@ -192,7 +217,7 @@ async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string
         if (settings.eachVersePrefix) {
             eachVersePrefix += settings.eachVersePrefix.replace("{n}", (i - settings.verseOffset).toString());
         }
-        const verseText = getVerseText(i, headings, lines);
+        const verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
 		if (settings.newLines) {
 			res += "\n" + settings.prefix + eachVersePrefix + verseText;
 		} 
@@ -203,6 +228,9 @@ async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string
 
     // 3 - Invisible links
     if (beginVerse == endVerse || !settings.useInvisibleLinks) return res; // No need to add another link, when only one verse is being linked
+    if (settings.newLines) {
+        res += `\n${settings.prefix}`;
+    }
     for (let i = beginVerse; i <= endVerse; i++) {
         res += `[[${fileName}#${headings[i].heading}|]]`
     }
