@@ -201,14 +201,14 @@ async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string
     // 1 - Link to verses
     let res = settings.prefix;
     if (beginVerse === endVerse) {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}.${beginVerseNoOffset}]] ` // [[Gen 1#1|Gen 1,1.1]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}${settings.oneVerseNotation}${beginVerseNoOffset}]] ` // [[Gen 1#1|Gen 1,1.1]]
     }
     else if (settings.linkEndVerse) {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput},${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}${settings.multipleVersesNotation}${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
         res += `[[${fileName}#${headings[endVerse].heading}|${endVerseNoOffset}]] `; // [[Gen 1#3|3]]
     }
     else {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput},${beginVerseNoOffset}-${endVerseNoOffset}]] ` // [[Gen 1#1|Gen 1,1-3]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${endVerseNoOffset}]] ` // [[Gen 1#1|Gen 1,1-3]]
     }
 
     // 2 - Text of verses

@@ -123,6 +123,34 @@ export class SettingsTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
+            .setName("One verse notation")
+            .setDesc("This is the symbol that will be used between chapter number and verse number when copying one verse. For example \".\" → Gen 1.1.")
+            .addText((inputBox) =>
+                inputBox    
+                    .setPlaceholder("Insert notation symbol here")
+                    .setValue(this.plugin.settings.oneVerseNotation)
+                    .onChange(async (value) => {
+                        this.plugin.settings.oneVerseNotation = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
+
+        new Setting(containerEl)
+            .setName("Multiple verses notation")
+            .setDesc("This is the symbol that will be used between chapter number and verse number when copying multiple verses. For example \",\" → Gen 1,1-3.")
+            .addText((inputBox) =>
+                inputBox    
+                    .setPlaceholder("Insert notation symbol here")
+                    .setValue(this.plugin.settings.multipleVersesNotation)
+                    .onChange(async (value) => {
+                        this.plugin.settings.multipleVersesNotation = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
+
+        // LINK -------------------------------------------------------------------------------------------------------------
+
+        new Setting(containerEl)
             .setHeading()
             .setName("Create obsidian links to bible verses settings")
 

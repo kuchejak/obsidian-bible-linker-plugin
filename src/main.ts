@@ -12,6 +12,8 @@ export interface PluginSettings {
 	useInvisibleLinks: boolean;
 	newLines: boolean;
 	eachVersePrefix: string;
+	oneVerseNotation: string,
+	multipleVersesNotation: string;
 
 	// Link
 	verifyFilesWhenLinking: boolean;
@@ -22,6 +24,7 @@ export interface PluginSettings {
 }
 
 const DEFAULT_SETTINGS: Partial<PluginSettings> = {
+	// Copy
 	prefix: "",
 	linkEndVerse: false,
 	verseOffset: 0,
@@ -29,6 +32,10 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 	useInvisibleLinks: true,
 	newLines: false,
 	eachVersePrefix: "",
+	oneVerseNotation: ".",
+	multipleVersesNotation: ",",
+
+	// Link
 	verifyFilesWhenLinking: false,
 	versePrefix: "",
 	linkTypePreset: LinkType.Basic,
