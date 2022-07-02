@@ -178,6 +178,13 @@ function tryConvertToOBSKFileName(bookAndChapter: string) {
     }
 }
 
+/**
+ * Replaces "\n" with newline character in given string (when user inputs "\n" in the settings it is automatically converted to "\\n" and does not work as newline)
+ */
+function replaceNewline(input: string) {
+    return input.replace(/\\n/g, "\n", );
+}
+
 async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings) {
     const file = app.vault.read(tFile)
     const lines = (await file).split(/\r?\n/)
@@ -200,15 +207,17 @@ async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string
 
     // 1 - Link to verses
     let res = settings.prefix;
+	const postfix = settings.postfix ? replaceNewline(settings.postfix) : " ";
+
     if (beginVerse === endVerse) {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}${settings.oneVerseNotation}${beginVerseNoOffset}]] ` // [[Gen 1#1|Gen 1,1.1]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
     }
     else if (settings.linkEndVerse) {
         res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}${settings.multipleVersesNotation}${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
-        res += `[[${fileName}#${headings[endVerse].heading}|${endVerseNoOffset}]] `; // [[Gen 1#3|3]]
+        res += `[[${fileName}#${headings[endVerse].heading}|${endVerseNoOffset}]]${postfix}`; // [[Gen 1#3|3]]
     }
     else {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${endVerseNoOffset}]] ` // [[Gen 1#1|Gen 1,1-3]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${endVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1-3]]
     }
 
     // 2 - Text of verses

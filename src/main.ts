@@ -6,6 +6,7 @@ import { SettingsTab } from './settings';
 export interface PluginSettings {
 	// Copy
 	prefix: string;
+	postfix: string;
 	linkEndVerse: boolean;
 	verseOffset: number;
 	verseHeadingLevel?: number;
@@ -26,6 +27,7 @@ export interface PluginSettings {
 const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 	// Copy
 	prefix: "",
+	postfix: "",
 	linkEndVerse: false,
 	verseOffset: 0,
 	verseHeadingLevel: undefined,

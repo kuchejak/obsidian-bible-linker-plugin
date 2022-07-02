@@ -61,14 +61,27 @@ export class SettingsTab extends PluginSettingTab {
 			})
 
         new Setting(containerEl)
-            .setName("Link prefix")
-            .setDesc("String inserted in front of linked verses, for example '>' for quote. Leave empty for no prefix.")
+            .setName("Line prefix")
+            .setDesc("String inserted in front of every line, for example '>' for quote. Note: If you set 'Put each verse on a new line?' to true, the prefix will be inserted in front of every line.")
             .addText((inputBox) =>
                 inputBox    
                     .setPlaceholder("Insert prefix here")
                     .setValue(this.plugin.settings.prefix)
                     .onChange(async (value) => {
                         this.plugin.settings.prefix = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
+
+        new Setting(containerEl)
+            .setName("Link postfix")
+            .setDesc("String inserted after biblical link, you can use \\n to insert newline.")
+            .addText((inputBox) =>
+                inputBox    
+                    .setPlaceholder("Insert postfix here")
+                    .setValue(this.plugin.settings.postfix)
+                    .onChange(async (value) => {
+                        this.plugin.settings.postfix = value;
                         await this.plugin.saveSettings();
                     })
             )
