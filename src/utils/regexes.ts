@@ -10,3 +10,6 @@ export const multipleVersesRegEx = new RegExp(/([^,:#]+)[,#.:;]\s*(\d+)\s*[-.=]\
 
 // Book and chapter string (used for converting to bible study kit file names)
 export const bookAndChapterRegexForOBSK = /([^,:#]+)\s(\d+)/
+
+// Multiple chapters, for example "Gen 1-3"
+export const multipleChapters = /(\d*[^\d,:#]+)\s*(\d+)\s*-\s*(\d+)\s*$/

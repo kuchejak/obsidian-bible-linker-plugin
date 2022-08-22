@@ -1,5 +1,5 @@
 import { App, HeadingCache, Notice, TFile } from "obsidian";
-import { bookAndChapterRegexForOBSK, multipleVersesRegEx, oneVerseRegEx } from "./regexes";
+import { bookAndChapterRegexForOBSK, multipleChapters, multipleVersesRegEx, oneVerseRegEx } from "./regexes";
 import { PluginSettings } from "../main";
 import { LinkType } from "src/modals/link-verse-modal";
 
@@ -8,16 +8,27 @@ import { LinkType } from "src/modals/link-verse-modal";
 
 
 /**
- * Converts biblical reference to links to given verses 
+ * Converts biblical reference to links to given verses or books 
  * @param app App instance
  * @param userInput User Input (link to verse)
  * @param linkType Type of link that should be used
  * @param useNewLine Whether or not should each link be on new line
  * @returns String with quote of linked verses. If converting was not successful, returns empty string.
  */
-export async function getLinksToVerses(app: App, userInput: string, linkType: LinkType, useNewLine: boolean, settings: PluginSettings) {
+export async function getLinks(app: App, userInput: string, linkType: LinkType, useNewLine: boolean, settings: PluginSettings) {
+    if (multipleChapters.test(userInput)) {
+        return getLinksForBooks(app, userInput, linkType, useNewLine, settings);
+    }
+    else {
+        return getLinksForVerses(app, userInput, linkType, useNewLine, settings);
+    }
+
+
+}
+
+async function getLinksForVerses(app: App, userInput: string, linkType: LinkType, useNewLine: boolean, settings: PluginSettings) {
     // eslint-disable-next-line prefer-const
-    let { bookAndChapter, beginVerse, endVerse } = parseUserInput(userInput);
+    let { bookAndChapter, beginVerse, endVerse } = parseUserVerseInput(userInput);
     bookAndChapter = capitalize(bookAndChapter) // For output consistency
     if (settings.verifyFilesWhenLinking) {
         const {fileName, tFile} = getFileFromBookAndChapter(app, bookAndChapter);
@@ -44,6 +55,25 @@ export async function getLinksToVerses(app: App, userInput: string, linkType: Li
     return res;
 }
 
+async function getLinksForBooks(app: App, userInput: string, linkType: LinkType, useNewLine: boolean, settings: PluginSettings) {
+    const {book, firstChapter, lastChapter} = parseUserBookInput(userInput);
+    if (firstChapter > lastChapter) {
+        new Notice("Begin chapter is bigger than end chapter")
+        throw "Begin chapter is bigger than end chapter"
+    }
+
+    let res = "";
+    for (let i = firstChapter; i <= lastChapter; i++) {
+        res += `[[${book} ${i}]]`
+        if (useNewLine) {
+            res += '\n'
+        }
+    }
+    return res;
+}
+
+
+
 /**
  * Converts biblical reference to text of given verses
  * @param app App instance
@@ -53,7 +83,7 @@ export async function getLinksToVerses(app: App, userInput: string, linkType: Li
 export async function getTextOfVerses(app: App, userInput: string, settings: PluginSettings): Promise<string> {
 
         // eslint-disable-next-line prefer-const
-        let {bookAndChapter, beginVerse, endVerse} = parseUserInput(userInput);
+        let {bookAndChapter, beginVerse, endVerse} = parseUserVerseInput(userInput);
         bookAndChapter = capitalize(bookAndChapter) // For output consistency
         const {fileName, tFile} = getFileFromBookAndChapter(app, bookAndChapter);
         if (tFile) {
@@ -75,7 +105,11 @@ function getFileFromBookAndChapter(app: App, bookAndChapter: string){
         return {fileName, tFile};
 }
 
-function parseUserInput(userInput: string) {
+/**
+ * Parses input from user, expecting chapter and verses
+ * @param userInput 
+ */
+function parseUserVerseInput(userInput: string) {
         let bookAndChapter;
         let beginVerse;
         let endVerse;
@@ -102,6 +136,32 @@ function parseUserInput(userInput: string) {
         }
 
         return {bookAndChapter, beginVerse, endVerse}
+}
+
+/**
+ * Parses input from user, expecting multiple chapters 
+ * @param userInput 
+ */
+function parseUserBookInput(userInput: string) {
+        let book;
+        let firstChapter;
+        let lastChapter;
+
+        switch (true) {
+            case multipleChapters.test(userInput): { // one verse
+                const [, matchedBook, matchedFirstChapter, matchedLastChapter] = userInput.match(multipleChapters) 
+                book = matchedBook.trim();
+                firstChapter = Number(matchedFirstChapter);
+                lastChapter = Number(matchedLastChapter);
+                break;
+            }
+            default: {
+                new Notice(`Wrong format "${userInput}"`);
+                throw "Could not parse user input"
+            }
+        }
+
+        return {book, firstChapter, lastChapter}
 }
 
 /*
