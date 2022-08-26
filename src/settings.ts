@@ -88,7 +88,7 @@ export class SettingsTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName("Each verse prefix")
-            .setDesc("String inserted in front of every copied verse. You can use \"{n}\" where you want number of given verse inserted, for example \"**{n}** \" will make each verse start with bold verse number. Leave empty for no prefix.")
+            .setDesc("String inserted in front of every copied verse. You can use \"{n}\" where you want number of given verse inserted, for example \"**{n}** \" will make each verse start with bold verse number. You can also use \"{f}\" to insert name of the corresponding file (for example to create obsidian links). Leave empty for no prefix.")
             .addText((inputBox) =>
                 inputBox    
                     .setPlaceholder("Insert prefix here")
