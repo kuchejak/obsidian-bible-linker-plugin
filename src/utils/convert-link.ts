@@ -284,8 +284,8 @@ async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string
     for (let i = beginVerse; i <= endVerse; i++) {
         let versePrefix = "";
         if (settings.eachVersePrefix) {
-            versePrefix += settings.eachVersePrefix.replace("{n}", (i - settings.verseOffset).toString());
-            versePrefix = versePrefix.replace("{f}", `${fileName}`);
+            versePrefix += settings.eachVersePrefix.replace(/{n}/g, (i - settings.verseOffset).toString());
+            versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
         }
         const verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
 		if (settings.newLines) {
