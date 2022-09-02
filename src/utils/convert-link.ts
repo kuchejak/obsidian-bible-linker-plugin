@@ -3,10 +3,6 @@ import { bookAndChapterRegexForOBSK, multipleChapters, multipleVersesRegEx, oneV
 import { PluginSettings } from "../main";
 import { LinkType } from "src/modals/link-verse-modal";
 
-
-
-
-
 /**
  * Converts biblical reference to links to given verses or books 
  * @param app App instance
@@ -72,25 +68,26 @@ async function getLinksForBooks(app: App, userInput: string, linkType: LinkType,
   return res;
 }
 
-
-
 /**
  * Converts biblical reference to text of given verses
  * @param app App instance
  * @param userInput User Input (link to verse)
  * @returns String with quote of linked verses. If converting was not successful, returns empty string.
+ * @verbose Determines if Notices will be shown or not
  */
-export async function getTextOfVerses(app: App, userInput: string, settings: PluginSettings): Promise<string> {
+export async function getTextOfVerses(app: App, userInput: string, settings: PluginSettings, verbose = true): Promise<string> {
 
   // eslint-disable-next-line prefer-const
-  let { bookAndChapter, beginVerse, endVerse } = parseUserVerseInput(userInput);
+  let { bookAndChapter, beginVerse, endVerse } = parseUserVerseInput(userInput, verbose);
   bookAndChapter = capitalize(bookAndChapter) // For output consistency
   const { fileName, tFile } = getFileFromBookAndChapter(app, bookAndChapter);
   if (tFile) {
-    return await createCopyOutput(app, tFile, bookAndChapter, fileName, beginVerse, endVerse, settings);
+    return await createCopyOutput(app, tFile, bookAndChapter, fileName, beginVerse, endVerse, settings, verbose);
   }
   else {
-    new Notice(`File ${bookAndChapter} not found`);
+    if (verbose) {
+      new Notice(`File ${bookAndChapter} not found`);
+    }
     throw "File not found"
   }
 }
@@ -109,7 +106,7 @@ function getFileFromBookAndChapter(app: App, bookAndChapter: string) {
  * Parses input from user, expecting chapter and verses
  * @param userInput 
  */
-function parseUserVerseInput(userInput: string) {
+function parseUserVerseInput(userInput: string, verbose = true) {
   let bookAndChapter;
   let beginVerse;
   let endVerse;
@@ -130,7 +127,9 @@ function parseUserVerseInput(userInput: string) {
       break;
     }
     default: {
-      new Notice(`Wrong format "${userInput}"`);
+      if (verbose) {
+        new Notice(`Wrong format "${userInput}"`);
+      }
       throw "Could not parse user input"
     }
   }
@@ -245,7 +244,7 @@ function replaceNewline(input: string) {
   return input.replace(/\\n/g, "\n",);
 }
 
-async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings) {
+async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, verbose: Boolean) {
   const file = app.vault.read(tFile)
   const lines = (await file).split(/\r?\n/)
   const verseHeadingLevel = settings.verseHeadingLevel
@@ -257,11 +256,15 @@ async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string
 
 
   if (beginVerse > endVerse) {
-    new Notice("Begin verse is bigger than end verse")
+    if (verbose) {
+      new Notice("Begin verse is bigger than end verse")
+    }
     throw "Begin verse is bigger than end verse"
   }
   if (headings.length <= beginVerse) {
-    new Notice("Begin verse out of range of chapter")
+    if (verbose) {
+      new Notice("Begin verse out of range of chapter")
+    }
     throw "Begin verse out of range of chapter"
   }
 

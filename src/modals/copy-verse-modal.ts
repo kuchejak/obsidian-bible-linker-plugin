@@ -3,6 +3,19 @@ import { getTextOfVerses } from "../utils/convert-link";
 import { PluginSettings } from "../main";
 
 /**
+ * Async function for fetching preview 
+ */
+async function setPreviewText(previewEl: HTMLTextAreaElement, userInput: string, pluginSettings: PluginSettings) {
+  try {
+    const res = await getTextOfVerses(this.app, userInput, pluginSettings, false);
+    previewEl.setText(res);
+  }
+  catch {
+    return;
+  }
+}
+
+/**
  * Modal that lets you insert bible reference by copying text of given verses
  */
 export default class CopyVerseModal extends Modal {
@@ -27,8 +40,10 @@ export default class CopyVerseModal extends Modal {
     this.pluginSettings = settings;
   }
 
+
   onOpen() {
     const { contentEl } = this;
+    let previewEl: HTMLTextAreaElement;
 
     // Add heading 
     contentEl.createEl("h3", { text: "Copy verse by bible reference" });
@@ -36,8 +51,15 @@ export default class CopyVerseModal extends Modal {
     // Add Textbox for reference
     new Setting(contentEl)
       .setName("Insert reference")
-      .addText((text) => text.onChange((value) => { this.userInput = value })
+      .addText((text) => text.onChange((value) => {
+        this.userInput = value;
+        setPreviewText(previewEl, this.userInput, this.pluginSettings);
+      })
         .inputEl.focus()); // Sets focus to input field
+
+    contentEl.createEl("label", { text: "Preview" });
+    previewEl = contentEl.createEl("textarea", { cls: 'copy-preview', attr: { disabled: true } });
+
 
     // Add button for submit/exit
     new Setting(contentEl)
