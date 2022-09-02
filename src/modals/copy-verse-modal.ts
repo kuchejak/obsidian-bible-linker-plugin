@@ -58,7 +58,7 @@ export default class CopyVerseModal extends Modal {
         .inputEl.focus()); // Sets focus to input field
 
     contentEl.createEl("label", { text: "Preview" });
-    previewEl = contentEl.createEl("textarea", { cls: 'copy-preview', attr: { disabled: true } });
+    previewEl = contentEl.createEl("textarea", { cls: 'copy-preview', attr: { readonly: true } });
 
 
     // Add button for submit/exit

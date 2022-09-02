@@ -2,5 +2,5 @@
 .copy-preview {
   width: 100%;
   height: 15rem; /*TODO, dynamic*/ 
-  
+  opacity: 1;
 }
