@@ -1,5 +1,5 @@
 import { App, HeadingCache, Notice, TFile } from "obsidian";
-import { bookAndChapterRegexForOBSK, multipleChapters, multipleVersesRegEx, oneVerseRegEx } from "./regexes";
+import { bookAndChapterRegexForOBSK, isOBSKFile, multipleChapters, multipleVersesRegEx, oneVerseRegEx } from "./regexes";
 import { PluginSettings } from "../main";
 import { LinkType } from "src/modals/link-verse-modal";
 
@@ -18,8 +18,6 @@ export async function getLinks(app: App, userInput: string, linkType: LinkType, 
     else {
         return getLinksForVerses(app, userInput, linkType, useNewLine, settings);
     }
-
-
 }
 
 async function getLinksForVerses(app: App, userInput: string, linkType: LinkType, useNewLine: boolean, settings: PluginSettings) {
@@ -82,7 +80,7 @@ export async function getTextOfVerses(app: App, userInput: string, settings: Plu
     bookAndChapter = capitalize(bookAndChapter) // For output consistency
     const { fileName, tFile } = getFileFromBookAndChapter(app, bookAndChapter);
     if (tFile) {
-        return await createCopyOutput(app, tFile, bookAndChapter, fileName, beginVerse, endVerse, settings, verbose);
+        return await createCopyOutput(app, tFile, fileName, beginVerse, endVerse, settings, verbose);
     }
     else {
         if (verbose) {
@@ -244,7 +242,22 @@ function replaceNewline(input: string) {
     return input.replace(/\\n/g, "\n",);
 }
 
-async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, verbose: Boolean) {
+/**
+ * Takes orginal filename and converts it to human-readable version if Bible study kit is used (removes "-" and leading zeros)
+ */
+function createBookAndChapterOutput(fileBasename: string) {
+    if (isOBSKFile.test(fileBasename)) {
+        let [, filename, chapter] = fileBasename.match(isOBSKFile);
+        if (chapter.toString()[0] === "0") {
+            chapter = chapter.substring(1);
+        }
+        return filename + " " + chapter;
+    }
+    return fileBasename;
+}
+
+async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, verbose: Boolean) {
+    const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename);
     const file = app.vault.read(tFile)
     const lines = (await file).split(/\r?\n/)
     const verseHeadingLevel = settings.verseHeadingLevel
@@ -273,14 +286,14 @@ async function createCopyOutput(app: App, tFile: TFile, userChapterInput: string
     const postfix = settings.postfix ? replaceNewline(settings.postfix) : " ";
 
     if (beginVerse === endVerse) {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
     }
     else if (settings.linkEndVerse) {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}${settings.multipleVersesNotation}${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
         res += `[[${fileName}#${headings[endVerse].heading}|${endVerseNoOffset}]]${postfix}`; // [[Gen 1#3|3]]
     }
     else {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${userChapterInput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${endVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1-3]]
+        res += `[[${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${endVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1-3]]
     }
 
     // 2 - Text of verses

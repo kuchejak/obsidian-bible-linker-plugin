@@ -13,3 +13,6 @@ export const bookAndChapterRegexForOBSK = /([^,:#]+)\s(\d+)/
 
 // Multiple chapters, for example "Gen 1-3"
 export const multipleChapters = /(\d*[^\d,:#]+)\s*(\d+)\s*-\s*(\d+)\s*$/
+
+// Can be used to determine whether given name of file is from OBSK (for example Gen-01)
+export const isOBSKFile = /([a-zA-Z0-9 ]+)-(\d{2,3})/
