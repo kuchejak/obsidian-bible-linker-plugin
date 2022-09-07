@@ -11,6 +11,7 @@ async function setPreviewText(previewEl: HTMLTextAreaElement, userInput: string,
         previewEl.setText(res);
     }
     catch {
+        previewEl.setText("");
         return;
     }
 }
