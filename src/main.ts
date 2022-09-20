@@ -89,14 +89,14 @@ export default class BibleLinkerPlugin extends Plugin {
         // Command to insert link (only available in editor mode)
         this.addCommand({
             id: 'insert-bible-link', // ID left to preserve user's key mappings
-            name: "Copy Bible verses",
+            name: "Copy and Link Bible verses",
             editorCallback: this.openCopyModal
         })
 
         // Command to insert link (only available in editor mode)
         this.addCommand({
             id: 'insert-bible-link-obsidian-link',
-            name: "Create Obsidian links to Bible verses",
+            name: "Link Bible verses",
             editorCallback: this.openObsidianLinkModal
         })
     }
