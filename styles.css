@@ -1,6 +1,13 @@
 
+/* Copy command */
 .copy-preview {
   width: 100%;
-  height: 15rem; /*TODO, dynamic*/ 
+  height: 15rem;
   opacity: 1;
+}
+
+
+/* Settings */
+.important-setting .setting-item-name {
+    font-weight: bold
 }

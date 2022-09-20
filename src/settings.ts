@@ -18,14 +18,13 @@ export class SettingsTab extends PluginSettingTab {
 
         containerEl.empty();
 
-        new Setting(containerEl)
-            .setHeading()
-            .setName("Copy bible verses settings")
-
+        containerEl.createEl("h2", { text: "Copy and Link Bible verses command" });
+        containerEl.createEl("h4", { text: "Functional" });
 
         new Setting(containerEl)
             .setName("Verse offset")
             .setDesc('Change this if wrong verses are being linked, e.g. you want "Gen 1,1-3" but output is text from verses 2-4 → set this to -1')
+            .setClass("important-setting")
             .addText((inputBox) =>
                 inputBox
                     .setValue(this.plugin.settings.verseOffset.toString())
@@ -60,9 +59,12 @@ export class SettingsTab extends PluginSettingTab {
                 })
             })
 
+        containerEl.createEl("h4", { text: "Inserted prefixes/postfixes" });
+
         new Setting(containerEl)
             .setName("Line prefix")
             .setDesc("String inserted in front of every line, for example '>' for quote. Note: If you set 'Put each verse on a new line?' to true, the prefix will be inserted in front of every line.")
+            .setClass("important-setting")
             .addText((inputBox) =>
                 inputBox
                     .setPlaceholder("Insert prefix here")
@@ -99,6 +101,9 @@ export class SettingsTab extends PluginSettingTab {
                     })
             )
 
+
+        containerEl.createEl("h4", { text: "Links" });
+
         new Setting(containerEl)
             .setName("Link to last verse?")
             .setDesc("Should last verse be linked in the visible link before text of verses?")
@@ -123,6 +128,8 @@ export class SettingsTab extends PluginSettingTab {
                     })
             )
 
+        containerEl.createEl("h4", { text: "Output format" });
+
         new Setting(containerEl)
             .setName("Put each verse on a new line?")
             .setDesc("Each verse is inserted on a new line (with Link prefix).")
@@ -134,6 +141,22 @@ export class SettingsTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     })
             )
+
+        new Setting(containerEl)
+            .setName("Insert space between verses?")
+            .setDesc("Should space be inserted between verses? (Only applied when Put each verse on a new line? is se to false. Useful for languages such as Chinese.)")
+            .setDisabled(!this.plugin.settings.newLines)
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.insertSpace)
+                    .onChange(async (value) => {
+                        this.plugin.settings.insertSpace = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
+
+
+        containerEl.createEl("h4", { text: "Notation" });
 
         new Setting(containerEl)
             .setName("One verse notation")
@@ -161,28 +184,16 @@ export class SettingsTab extends PluginSettingTab {
                     })
             )
 
-        new Setting(containerEl)
-            .setName("Insert space between verses?")
-            .setDesc("Should space be inserted between verses? (Only applied when Put each verse on a new line? is se to false. Useful for languages such as Chinese.)")
-            .setDisabled(!this.plugin.settings.newLines)
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.insertSpace)
-                    .onChange(async (value) => {
-                        this.plugin.settings.insertSpace = value;
-                        await this.plugin.saveSettings();
-                    })
-            )
 
         // LINK -------------------------------------------------------------------------------------------------------------
 
-        new Setting(containerEl)
-            .setHeading()
-            .setName("Create obsidian links to bible verses settings")
+        containerEl.createEl("h2", { text: "Link Bible verses command" });
 
+        containerEl.createEl("h4", { text: "File format" });
         new Setting(containerEl)
             .setName("Link separator")
             .setDesc("This is the separator that will be used when linking, e.g. if you enter '#' here, output will be [[Gen 1#1]]. If you are using headings to mark verses, use '#'. If you are using block references, use '^'.")
+            .setClass("important-setting")
             .addText((inputBox) =>
                 inputBox
                     .setPlaceholder("Insert separator here")
@@ -193,21 +204,11 @@ export class SettingsTab extends PluginSettingTab {
                     })
             )
 
-        new Setting(containerEl)
-            .setName("Verify files?")
-            .setDesc("Verify existence of files you are trying to link, so that you are not inserting wrong references by mistake.")
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.verifyFilesWhenLinking)
-                    .onChange(async (value) => {
-                        this.plugin.settings.verifyFilesWhenLinking = value;
-                        await this.plugin.saveSettings();
-                    })
-            )
 
         new Setting(containerEl)
             .setName("Verse prefix")
             .setDesc('Fill this if you are using verse prefixes in your bible files, e.g. you have "v1" in your file → set to "v".')
+            .setClass("important-setting")
             .addText((inputBox) =>
                 inputBox
                     .setPlaceholder("Insert prefix here")
@@ -217,6 +218,9 @@ export class SettingsTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     })
             )
+
+
+        containerEl.createEl("h4", { text: "Defaults" });
 
         new Setting(containerEl)
             .setName("Link type default value")
@@ -243,6 +247,21 @@ export class SettingsTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     })
             )
+
+        containerEl.createEl("h4", { text: "Misc" });
+
+        new Setting(containerEl)
+            .setName("Verify files?")
+            .setDesc("Verify existence of files you are trying to link, so that you are not inserting wrong references by mistake.")
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.verifyFilesWhenLinking)
+                    .onChange(async (value) => {
+                        this.plugin.settings.verifyFilesWhenLinking = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
+
 
     }
 }
