@@ -6,7 +6,7 @@ Plugin for easier linking of multiple bible verses in Obsdian.md note taking app
 2. Insert bible link, for example "Gen 1,1-3 or Gen 1.1". Note: Links across more chapters are not supported (yet?).
 3. Watch the magic.
 
-## Copy bible verses command
+## Copy and Link Bible verses command
 Copies given verses from your bible files and inserts obsidian links to them. 
 
 ### Example output (input: `Gen 1,1-3`)
@@ -20,7 +20,7 @@ Note that linking is done using "invisible" links after the verses (those links 
 - You can edit the text if you want (for example add some in-line notes, bold important part...) without effecting the original.
 
 
-## Create obsidian links to bible verses command
+## Link Bible verses command
 Simpler command that only creates obsidian links based on input. You can choose if you want standard links (e.g. `[[Gen-01#v1]]`), embedded links (e.g. `![[Gen-01#v1]]`) or links invisible in the preview mode (e.g. `[[Gen-01#v1|]]`). This command is less powerful, but it also has looser requirements for your bible files, so you can use it even when the copy command does not work.  
 
 ![obrazek](https://user-images.githubusercontent.com/94016085/160867853-5bff3b17-d8a7-4ec9-8672-eb1fa3acc88c.png)
