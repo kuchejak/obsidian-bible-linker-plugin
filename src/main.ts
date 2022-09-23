@@ -4,47 +4,77 @@ import LinkVerseModal, { LinkType } from './modals/link-verse-modal';
 import { SettingsTab } from './settings';
 
 export interface PluginSettings {
-    // Copy
-    prefix: string;
-    postfix: string;
-    linkEndVerse: boolean;
+    // COPY
+    // Functional
     verseOffset: number;
     verseHeadingLevel?: number;
-    useInvisibleLinks: boolean;
-    newLines: boolean;
+
+    // Inserted prefixes/postfixes
+    prefix: string;
+    postfix: string;
     eachVersePrefix: string;
-    oneVerseNotation: string,
-    multipleVersesNotation: string;
+
+    // Links
+    linkEndVerse: boolean;
+    useInvisibleLinks: boolean;
+
+    // Output format
+    newLines: boolean;
     insertSpace: boolean;
 
-    // Link
-    verifyFilesWhenLinking: boolean;
+    // Notation
+    oneVerseNotation: string,
+    multipleVersesNotation: string;
+
+    // Multiple translations
+
+    // LINK
+    // File format
+    linkSeparator: string;
     versePrefix: string;
+
+    // Defaults
     linkTypePreset: LinkType;
     newLinePreset: boolean;
-    linkSeparator: string;
+
+    // Misc
+    verifyFilesWhenLinking: boolean;
 }
 
 const DEFAULT_SETTINGS: Partial<PluginSettings> = {
-    // Copy
-    prefix: "",
-    postfix: "",
-    linkEndVerse: false,
+    // COPY
+    // Functional
     verseOffset: 0,
     verseHeadingLevel: undefined,
-    useInvisibleLinks: true,
-    newLines: false,
+
+    // Inserted prefixes/postfixes
+    prefix: "",
+    postfix: "",
     eachVersePrefix: "",
-    oneVerseNotation: ".",
-    multipleVersesNotation: ",",
+
+    // Links
+    linkEndVerse: false,
+    useInvisibleLinks: true,
+
+    // Output format
+    newLines: false,
     insertSpace: true,
 
-    // Link
-    verifyFilesWhenLinking: false,
+    // Notation
+    oneVerseNotation: ".",
+    multipleVersesNotation: ",",
+
+    // LINK
+    // File format
+    linkSeparator: "#",
     versePrefix: "",
+
+    // Defaults
     linkTypePreset: LinkType.Basic,
     newLinePreset: true,
-    linkSeparator: "#"
+
+    // Misc
+    verifyFilesWhenLinking: false,
 }
 
 export default class BibleLinkerPlugin extends Plugin {
