@@ -184,6 +184,41 @@ export class SettingsTab extends PluginSettingTab {
                     })
             )
 
+        containerEl.createEl("h4", { text: "Multiple translations" });
+        containerEl.createEl("p", {
+            text: "As of right now this is an experimental feature. If you encounter any bugs or you can not figure things out create issue on the GitHub page of this plugin."
+        });
+
+
+        new Setting(containerEl)
+            .setName("Enable multiple translations")
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.enableMultipleTranslations)
+                    .onChange(async (value) => {
+                        this.plugin.settings.enableMultipleTranslations = value;
+                        await this.plugin.saveSettings();
+                        this.display();
+                    })
+            )
+
+
+        if (this.plugin.settings.enableMultipleTranslations) {
+            new Setting(containerEl)
+                .setName("Paths to translations with their names")
+                .setDesc("Input paths to folders containing Bible translations. Enter the name of the translation, followed by a colon and full path to the translation, each translation on a new line. An example of an entry: \"NIV:Bible/NIV\". The plugin will search for corresponding Bible files using given paths as starting points. Make sure there are no duplicate files in given paths, otherwise it is hard to tell what the output will be.")
+                .addTextArea((inputBox) =>
+                    inputBox
+                        .setPlaceholder("NIV:Bible/NIV\nESV:Bible/ESV")
+                        .setValue(this.plugin.settings.translationsPaths)
+                        .onChange(async (value) => {
+                            this.plugin.settings.translationsPaths = value;
+                            await this.plugin.saveSettings();
+                            console.log(this.plugin.settings.translationsPaths)
+                        })
+                )
+        }
+
 
         // LINK -------------------------------------------------------------------------------------------------------------
 
