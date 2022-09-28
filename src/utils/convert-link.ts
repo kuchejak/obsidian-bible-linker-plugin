@@ -247,6 +247,7 @@ function replaceNewline(input: string) {
  */
 function createBookAndChapterOutput(fileBasename: string) {
     if (isOBSKFile.test(fileBasename)) {
+		// eslint-disable-next-line prefer-const
         let [, filename, chapter] = fileBasename.match(isOBSKFile);
         if (chapter.toString()[0] === "0") {
             chapter = chapter.substring(1);
@@ -256,7 +257,7 @@ function createBookAndChapterOutput(fileBasename: string) {
     return fileBasename;
 }
 
-async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, verbose: Boolean) {
+async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, verbose: boolean) {
     const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename);
     const file = app.vault.read(tFile)
     const lines = (await file).split(/\r?\n/)
@@ -299,7 +300,7 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     // 2 - Text of verses
     for (let i = beginVerse; i <= endVerse; i++) {
         let versePrefix = "";
-        let versePostfix = settings.insertSpace ? " " : "";
+        const versePostfix = settings.insertSpace ? " " : "";
         if (settings.eachVersePrefix) {
             versePrefix += settings.eachVersePrefix.replace(/{n}/g, (i - settings.verseOffset).toString());
             versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
