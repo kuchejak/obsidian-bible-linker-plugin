@@ -1,7 +1,7 @@
 
 import { App, Modal, Setting } from "obsidian";
-import { getLinks } from "../utils/convert-link";
 import { PluginSettings } from "../main";
+import {createLinks} from "../logic/link-command";
 
 export enum LinkType {
     Basic = "Basic",
@@ -21,8 +21,8 @@ export default class LinkVerseModal extends Modal {
 
     handleInput = async () => {
         try {
-            const res = await getLinks(this.app, this.userInput, this.linkType, this.useNewLine, this.pluginSettings)
-            this.close();
+            const res = await createLinks(this.app, this.userInput, this.linkType, this.useNewLine, this.pluginSettings)
+			this.close();
             this.onSubmit(res);
         }
         catch (err) {

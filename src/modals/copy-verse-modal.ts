@@ -1,6 +1,6 @@
 import { App, Modal, Setting } from "obsidian";
-import { getTextOfVerses } from "../utils/convert-link";
 import { PluginSettings } from "../main";
+import {getTextOfVerses} from "../logic/copy-command";
 
 /**
  * Async function for fetching preview 
