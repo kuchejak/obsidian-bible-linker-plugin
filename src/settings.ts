@@ -206,10 +206,10 @@ export class SettingsTab extends PluginSettingTab {
         if (this.plugin.settings.enableMultipleTranslations) {
             new Setting(containerEl)
                 .setName("Paths to translations with their names")
-                .setDesc("Input paths to folders containing Bible translations. Enter the name of the translation, followed by a colon and full path to the translation, each translation on a new line. An example of an entry: \"NIV:Bible/NIV\". The plugin will search for corresponding Bible files using given paths as starting points. Make sure there are no duplicate files in given paths, otherwise it is hard to tell what the output will be.")
+                .setDesc("Input full paths to folders containing Bible translations, each trnaslation on separate line. An example of one entry: \"Bible/NIV\". The plugin will search for corresponding Bible files using given paths as starting points. Make sure there are no duplicate files in given paths, otherwise it is hard to tell what the output will be.")
                 .addTextArea((inputBox) =>
                     inputBox
-                        .setPlaceholder("NIV:Bible/NIV\nESV:Bible/ESV")
+                        .setPlaceholder("Bible/NIV\nBible/ESV")
                         .setValue(this.plugin.settings.translationsPaths)
                         .onChange(async (value) => {
                             this.plugin.settings.translationsPaths = value;
