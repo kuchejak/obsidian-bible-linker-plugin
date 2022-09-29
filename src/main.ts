@@ -23,12 +23,13 @@ export interface PluginSettings {
     insertSpace: boolean;
 
     // Notation
-    oneVerseNotation: string,
+    oneVerseNotation: string;
     multipleVersesNotation: string;
 
     // Multiple translations
     enableMultipleTranslations: boolean;
-    translationsPaths: string,
+    translationsPaths: string;
+    translationLinking: string;
 
     // LINK
     // File format
@@ -69,6 +70,7 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
     // Multiple translations
     enableMultipleTranslations: false,
     translationsPaths: "",
+    translationLinking: "all",
 
     // LINK
     // File format
