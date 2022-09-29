@@ -102,27 +102,27 @@ export default class CopyVerseModal extends Modal {
                 this.translationPath = buttonPathMap.get(buttons.first());
             }
             )
+        }
 
-            // Add preview
-            contentEl.createEl("label", { text: "Preview" });
-            previewEl = contentEl.createEl("textarea", { cls: 'copy-preview', attr: { readonly: true } });
+        // Add preview
+        contentEl.createEl("label", { text: "Preview" });
+        previewEl = contentEl.createEl("textarea", { cls: 'copy-preview', attr: { readonly: true } });
 
 
-            // Add button for submit/exit
-            new Setting(contentEl)
-                .addButton((btn) => {
-                    btn
-                        .setButtonText("Link")
-                        .setCta()
-                        .onClick(this.handleInput)
-                });
+        // Add button for submit/exit
+        new Setting(contentEl)
+            .addButton((btn) => {
+                btn
+                    .setButtonText("Link")
+                    .setCta()
+                    .onClick(this.handleInput)
+            });
 
-            // Allow user to exit using Enter key
-            contentEl.onkeydown = (event) => {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    this.handleInput();
-                }
+        // Allow user to exit using Enter key
+        contentEl.onkeydown = (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                this.handleInput();
             }
         }
     }
