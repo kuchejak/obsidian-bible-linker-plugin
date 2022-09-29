@@ -17,7 +17,7 @@ export async function getTextOfVerses(app: App, userInput: string, settings: Plu
     bookAndChapter = capitalize(bookAndChapter) // For output consistency
     const { fileName, tFile } = getFileByFilename(app, bookAndChapter, translationPath);
     if (tFile) {
-        return await createCopyOutput(app, tFile, fileName, beginVerse, endVerse, settings, verbose);
+        return await createCopyOutput(app, tFile, fileName, beginVerse, endVerse, settings, tFile.parent.path + "/", verbose);
     } else {
         if (verbose) {
             new Notice(`File ${bookAndChapter} not found`);
@@ -94,7 +94,7 @@ function createBookAndChapterOutput(fileBasename: string) {
 }
 
 
-async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, verbose: boolean) {
+async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, translationPath: string, verbose: boolean) {
     const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename);
     const file = app.vault.read(tFile)
     const lines = (await file).split(/\r?\n/)
@@ -122,14 +122,15 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     // 1 - Link to verses
     let res = settings.prefix;
     const postfix = settings.postfix ? replaceNewline(settings.postfix) : " ";
+    const pathToUse = settings.enableMultipleTranslations ? translationPath : "";
 
     if (beginVerse === endVerse) {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
+        res += `[[${pathToUse}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
     } else if (settings.linkEndVerse) {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
-        res += `[[${fileName}#${headings[endVerse].heading}|${endVerseNoOffset}]]${postfix}`; // [[Gen 1#3|3]]
+        res += `[[${pathToUse}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
+        res += `[[${pathToUse}${fileName}#${headings[endVerse].heading}|${endVerseNoOffset}]]${postfix}`; // [[Gen 1#3|3]]
     } else {
-        res += `[[${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${endVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1-3]]
+        res += `[[${pathToUse}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${endVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1-3]]
     }
 
     // 2 - Text of verses
@@ -154,7 +155,7 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
         res += `\n${settings.prefix}`;
     }
     for (let i = beginVerse; i <= endVerse; i++) {
-        res += `[[${fileName}#${headings[i].heading}|]]`
+        res += `[[${pathToUse}${fileName}#${headings[i].heading}|]]`
     }
     return res;
 }
