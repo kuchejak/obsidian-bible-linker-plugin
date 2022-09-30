@@ -29,7 +29,8 @@ export interface PluginSettings {
     // Multiple translations
     enableMultipleTranslations: boolean;
     translationsPaths: string;
-    translationLinking: string;
+    parsedTranslationPaths: string[]; // callculated from translations paths, not shown to the user
+    translationLinkingType: string;
 
     // LINK
     // File format
@@ -70,7 +71,8 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
     // Multiple translations
     enableMultipleTranslations: false,
     translationsPaths: "",
-    translationLinking: "all",
+    parsedTranslationPaths: [],
+    translationLinkingType: "all",
 
     // LINK
     // File format

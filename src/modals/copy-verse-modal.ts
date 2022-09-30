@@ -61,25 +61,14 @@ export default class CopyVerseModal extends Modal {
 
         // Add translation picker
         if (this.pluginSettings.enableMultipleTranslations && this.pluginSettings.translationsPaths !== "") {
-            const originalPaths = this.pluginSettings.translationsPaths.split(/\r?\n|\r/); // split user input by lines (regex takes into account all possible line endings)
-            const paths: string[] = [];
-            originalPaths.forEach((path) => {
-                if (path.at(-1) !== "/") { // Add potentionally missing '/' to path
-                    paths.push(path + "/");
-                }
-                else {
-                    paths.push(path)
-                }
-            })
-
-
             const transationPicker = new Setting(contentEl)
                 .setName("Pick translation")
 
             let buttons: ButtonComponent[] = [];
             let buttonPathMap = new Map<ButtonComponent, string>();
 
-            paths.forEach((path) => { // display translation buttons
+
+            this.pluginSettings.parsedTranslationPaths.forEach((path) => { // display translation buttons
                 transationPicker
                     .addButton((btn) => {
                         buttons.push(btn);

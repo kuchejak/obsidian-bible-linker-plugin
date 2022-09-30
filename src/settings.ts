@@ -211,7 +211,18 @@ export class SettingsTab extends PluginSettingTab {
                         .setPlaceholder("Bible/NIV/\nBible/ESV/")
                         .setValue(this.plugin.settings.translationsPaths)
                         .onChange(async (value) => {
+                            const inputPaths = value.split(/\r?\n|\r/); // split user input by lines (regex takes into account all possible line endings)
+                            const paths: string[] = [];
+                            inputPaths.forEach((path) => { // parse user input for later use
+                                if (path.at(-1) !== "/") { // Add potentionally missing '/' to path
+                                    paths.push(path + "/");
+                                }
+                                else {
+                                    paths.push(path)
+                                }
+                            })
                             this.plugin.settings.translationsPaths = value;
+                            this.plugin.settings.parsedTranslationPaths = paths;
                             await this.plugin.saveSettings();
                         })
                 )
@@ -225,8 +236,9 @@ export class SettingsTab extends PluginSettingTab {
                     dropdown.addOption("used", "Link only to used translation")
                     dropdown.addOption("useadAndMain", "Link to used and main translation")
                     dropdown.addOption("main", "Link only to main translation")
+                    dropdown.setValue(this.plugin.settings.translationLinkingType)
                     dropdown.onChange(async (value) => {
-                        this.plugin.settings.translationLinking = value;
+                        this.plugin.settings.translationLinkingType = value;
                         await this.plugin.saveSettings();
                     })
                 })

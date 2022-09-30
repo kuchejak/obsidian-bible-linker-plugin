@@ -1,7 +1,7 @@
 import { App, HeadingCache, Notice, TFile } from "obsidian";
 import { PluginSettings } from "../main";
 import { isOBSKFile } from "../utils/regexes";
-import { capitalize, getFileByFilename, parseUserVerseInput } from "./common";
+import { capitalize, getFileByFilename as getTFileByFilename, parseUserVerseInput } from "./common";
 
 /**
  * Converts biblical reference to text of given verses
@@ -15,7 +15,7 @@ export async function getTextOfVerses(app: App, userInput: string, settings: Plu
     // eslint-disable-next-line prefer-const
     let { bookAndChapter, beginVerse, endVerse } = parseUserVerseInput(userInput, verbose);
     bookAndChapter = capitalize(bookAndChapter) // For output consistency
-    const { fileName, tFile } = getFileByFilename(app, bookAndChapter, translationPath);
+    const { fileName, tFile } = getTFileByFilename(app, bookAndChapter, translationPath);
     if (tFile) {
         return await createCopyOutput(app, tFile, fileName, beginVerse, endVerse, settings, tFile.parent.path + "/", verbose);
     } else {
@@ -93,6 +93,14 @@ function createBookAndChapterOutput(fileBasename: string) {
     return fileBasename;
 }
 
+/**
+ * Returns path to folder in which given file is located for main translation
+ */
+function getFileFolderInMainTranslation(app: App, filename: string, settings: PluginSettings) {
+    const tFileInfo = getTFileByFilename(app, filename, settings.parsedTranslationPaths.first());
+    return tFileInfo.tFile.parent.path + "/" + filename;
+}
+
 
 async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, translationPath: string, verbose: boolean) {
     const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename);
@@ -122,7 +130,14 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     // 1 - Link to verses
     let res = settings.prefix;
     const postfix = settings.postfix ? replaceNewline(settings.postfix) : " ";
-    const pathToUse = settings.enableMultipleTranslations ? translationPath : "";
+    let pathToUse = "";
+    if (settings.enableMultipleTranslations) {
+        if (settings.translationLinkingType !== "main") // link the translation that is currently being used
+            pathToUse = translationPath;
+        else { // link main translation
+            pathToUse = getFileFolderInMainTranslation(app, fileName, settings)
+        }
+    }
 
     if (beginVerse === endVerse) {
         res += `[[${pathToUse}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
