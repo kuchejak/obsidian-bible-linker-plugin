@@ -17,7 +17,7 @@ export async function getTextOfVerses(app: App, userInput: string, settings: Plu
     bookAndChapter = capitalize(bookAndChapter) // For output consistency
     const { fileName, tFile } = getTFileByFilename(app, bookAndChapter, translationPath);
     if (tFile) {
-        return await createCopyOutput(app, tFile, fileName, beginVerse, endVerse, settings, tFile.parent.path + "/", verbose);
+        return await createCopyOutput(app, tFile, fileName, beginVerse, endVerse, settings, translationPath, verbose);
     } else {
         if (verbose) {
             new Notice(`File ${bookAndChapter} not found`);
@@ -96,9 +96,9 @@ function createBookAndChapterOutput(fileBasename: string) {
 /**
  * Returns path to folder in which given file is located for main translation
  */
-function getFileFolderInMainTranslation(app: App, filename: string, settings: PluginSettings) {
-    const tFileInfo = getTFileByFilename(app, filename, settings.parsedTranslationPaths.first());
-    return tFileInfo.tFile.parent.path + "/" + filename;
+function getFileFolderInTranslation(app: App, filename: string, translation: string) {
+    const tFileInfo = getTFileByFilename(app, filename, translation);
+    return tFileInfo.tFile.parent.path;
 }
 
 
@@ -133,19 +133,19 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     let pathToUse = "";
     if (settings.enableMultipleTranslations) {
         if (settings.translationLinkingType !== "main") // link the translation that is currently being used
-            pathToUse = translationPath;
+            pathToUse = getFileFolderInTranslation(app, fileName, translationPath);
         else { // link main translation
-            pathToUse = getFileFolderInMainTranslation(app, fileName, settings)
+            pathToUse = getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first());
         }
     }
 
     if (beginVerse === endVerse) {
-        res += `[[${pathToUse}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
+        res += `[[${pathToUse}/${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
     } else if (settings.linkEndVerse) {
-        res += `[[${pathToUse}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
-        res += `[[${pathToUse}${fileName}#${headings[endVerse].heading}|${endVerseNoOffset}]]${postfix}`; // [[Gen 1#3|3]]
+        res += `[[${pathToUse}/${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
+        res += `[[${pathToUse}/${fileName}#${headings[endVerse].heading}|${endVerseNoOffset}]]${postfix}`; // [[Gen 1#3|3]]
     } else {
-        res += `[[${pathToUse}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${endVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1-3]]
+        res += `[[${pathToUse}/${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${endVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1-3]]
     }
 
     // 2 - Text of verses
@@ -165,12 +165,50 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     }
 
     // 3 - Invisible links
-    if (beginVerse == endVerse || !settings.useInvisibleLinks) return res; // No need to add another link, when only one verse is being linked
+
+    if (!settings.useInvisibleLinks) return res;
+    if (beginVerse == endVerse // No need to add another link, when only one verse is being linked
+        && (!settings.enableMultipleTranslations
+            || settings.translationLinkingType === "main"
+            || settings.translationLinkingType === "used")) // Only linking one translation - already linked 
+        return res;
+
     if (settings.newLines) {
         res += `\n${settings.prefix}`;
     }
     for (let i = beginVerse; i <= endVerse; i++) {
-        res += `[[${pathToUse}${fileName}#${headings[i].heading}|]]`
+        if (!settings.enableMultipleTranslations) {
+            res += `[[${fileName}#${headings[i].heading}|]]`
+        }
+        else { // multiple translations 
+            let translationPathsToUse: string[] = [];
+            switch (settings.translationLinkingType) {
+                case "all":
+                    translationPathsToUse = settings.parsedTranslationPaths.map((tr) => getFileFolderInTranslation(app, fileName, tr))
+                    break;
+                case "used":
+                    translationPathsToUse = [getFileFolderInTranslation(app, fileName, translationPath)]
+                    break;
+                case "usedAndMain":
+                    if (translationPath !== settings.parsedTranslationPaths.first()) {
+                        translationPathsToUse = [getFileFolderInTranslation(app, fileName, translationPath),
+                        getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first())];
+                    }
+                    else {
+                        translationPathsToUse = [getFileFolderInTranslation(app, fileName, translationPath)];
+                    }
+                    break;
+                case "main":
+                    translationPathsToUse = [getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first())];
+                    break;
+                default:
+                    break;
+            }
+            translationPathsToUse.forEach((translationPath) => {
+                res += `[[${translationPath}/${fileName}#${headings[i].heading}|]]`
+            })
+        }
+
     }
     return res;
 }

@@ -234,7 +234,7 @@ export class SettingsTab extends PluginSettingTab {
                 .addDropdown((dropdown) => {
                     dropdown.addOption("all", "Link to all translations")
                     dropdown.addOption("used", "Link only to used translation")
-                    dropdown.addOption("useadAndMain", "Link to used and main translation")
+                    dropdown.addOption("usedAndMain", "Link to used and main translation")
                     dropdown.addOption("main", "Link only to main translation")
                     dropdown.setValue(this.plugin.settings.translationLinkingType)
                     dropdown.onChange(async (value) => {
