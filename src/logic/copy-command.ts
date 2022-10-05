@@ -56,7 +56,7 @@ function getVerseText(verseNumber: number, headings: HeadingCache[], lines: stri
     // eslint-disable-next-line no-constant-condition
     while (true) {
         line = lines[headingLine + i]; // get next line
-        if (/#/.test(line) || (!line && !isFirst)) {
+        if (/^#/.test(line) || (!line && !isFirst)) {
             break; // heading line (next verse) or empty line after verse => do not continue
         }
         i++;
