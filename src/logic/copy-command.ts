@@ -101,7 +101,6 @@ function getFileFolderInTranslation(app: App, filename: string, translation: str
     return tFileInfo.tFile.parent.path;
 }
 
-
 async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, translationPath: string, verbose: boolean) {
     const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename);
     const file = app.vault.read(tFile)
@@ -109,23 +108,20 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     const verseHeadingLevel = settings.verseHeadingLevel
     const headings = app.metadataCache.getFileCache(tFile).headings.filter(heading => !verseHeadingLevel || heading.level === verseHeadingLevel)
     const beginVerseNoOffset = beginVerse
-    const endVerseNoOffset = endVerse
     beginVerse += settings.verseOffset
     endVerse += settings.verseOffset
+    var nrOfVerses = headings.length - 1;
+    var maxVerse = endVerse < nrOfVerses ? endVerse : nrOfVerses; // if endverse is bigger than chapter allows, it is lowered to maximum
+    var maxVerseNoOffset = maxVerse - settings.verseOffset;
 
 
-    if (beginVerse > endVerse) {
+    if (beginVerse > maxVerse) {
         if (verbose) {
-            new Notice("Begin verse is bigger than end verse")
+            new Notice("Begin verse is bigger than end verse or chapter maximum")
         }
-        throw "Begin verse is bigger than end verse"
+        throw "Begin verse is bigger than end verse or chapter maximum"
     }
-    if (headings.length <= beginVerse) {
-        if (verbose) {
-            new Notice("Begin verse out of range of chapter")
-        }
-        throw "Begin verse out of range of chapter"
-    }
+
 
     // 1 - Link to verses
     let res = settings.prefix;
@@ -139,17 +135,17 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
         }
     }
 
-    if (beginVerse === endVerse) {
+    if (beginVerse === maxVerse) {
         res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
     } else if (settings.linkEndVerse) {
         res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
-        res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[endVerse].heading}|${endVerseNoOffset}]]${postfix}`; // [[Gen 1#3|3]]
+        res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[maxVerse].heading}|${maxVerseNoOffset}]]${postfix}`; // [[Gen 1#3|3]]
     } else {
-        res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${endVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1-3]]
+        res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${maxVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1-3]]
     }
 
     // 2 - Text of verses
-    for (let i = beginVerse; i <= endVerse; i++) {
+    for (let i = beginVerse; i <= maxVerse; i++) {
         let versePrefix = "";
         const versePostfix = settings.insertSpace ? " " : "";
         if (settings.eachVersePrefix) {
@@ -167,7 +163,7 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     // 3 - Invisible links
 
     if (!settings.useInvisibleLinks) return res;
-    if (beginVerse == endVerse // No need to add another link, when only one verse is being linked
+    if (beginVerse == maxVerse // No need to add another link, when only one verse is being linked
         && (!settings.enableMultipleTranslations
             || settings.translationLinkingType === "main"
             || settings.translationLinkingType === "used")) // Only linking one translation - already linked 
@@ -176,7 +172,7 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     if (settings.newLines) {
         res += `\n${settings.prefix}`;
     }
-    for (let i = beginVerse; i <= endVerse; i++) {
+    for (let i = beginVerse; i <= maxVerse; i++) {
         if (!settings.enableMultipleTranslations) {
             res += `[[${fileName}#${headings[i].heading}|]]`
         }
