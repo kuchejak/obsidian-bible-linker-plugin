@@ -1,6 +1,7 @@
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 import BibleLinkerPlugin from "./main";
 import { LinkType } from "./modals/link-verse-modal";
+import { LinkType as CopyLinkType } from "./modals/copy-verse-modal";
 
 /**
  * Settings for plugin
@@ -127,6 +128,36 @@ export class SettingsTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     })
             )
+
+        new Setting(containerEl)
+            .setName("Link only type default")
+            .setDesc("What should be selected by default, when you use the link only option")
+            .addDropdown((dropdown) => {
+                dropdown.addOption(CopyLinkType.First, CopyLinkType.First)
+                dropdown.addOption(CopyLinkType.FirstOtherInvis, CopyLinkType.FirstOtherInvis)
+                dropdown.addOption(CopyLinkType.FirstLast, CopyLinkType.FirstLast)
+                dropdown.addOption(CopyLinkType.FirstLastOtherInvis, CopyLinkType.FirstLastOtherInvis)
+                dropdown.addOption(CopyLinkType.All, CopyLinkType.All)
+                dropdown.addOption(CopyLinkType.AllInvis, CopyLinkType.AllInvis)
+                dropdown.setValue(this.plugin.settings.copyCommandLinkTypePreset?.toString() ?? CopyLinkType.First)
+                dropdown.onChange(async (value) => {
+                    this.plugin.settings.copyCommandLinkTypePreset = value as CopyLinkType;
+                    await this.plugin.saveSettings();
+                })
+            })
+
+        new Setting(containerEl)
+            .setName("Link only default")
+            .setDesc("What the link only option should be set to by default")
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.copyCommandLinkOnlyPreset)
+                    .onChange(async (value) => {
+                        this.plugin.settings.copyCommandLinkOnlyPreset = value;
+                        await this.plugin.saveSettings();
+                    })
+            )
+
 
         containerEl.createEl("h4", { text: "Output format" });
 

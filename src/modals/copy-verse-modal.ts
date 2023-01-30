@@ -18,7 +18,9 @@ async function setPreviewText(previewEl: HTMLTextAreaElement, userInput: string,
 
 export enum LinkType {
     First = "First verse",
+    FirstOtherInvis = "First verse + other invisible",
     FirstLast = "First and last verse",
+    FirstLastOtherInvis = "First and last + other invisible",
     All = "All verses",
     AllInvis = "All verses, invisible",
 }
@@ -115,16 +117,19 @@ export default class CopyVerseModal extends Modal {
             .setName("Link only")
             .addDropdown((dropdown) => {
                 linkTypeDropdown = dropdown.selectEl;
-                dropdown.selectEl.hide()
+                if (!this.pluginSettings.copyCommandLinkOnlyPreset) // hide/show by default based on the preset setting
+                    dropdown.selectEl.hide()
                 dropdown.addOption(LinkType.First, LinkType.First)
+                dropdown.addOption(LinkType.FirstOtherInvis, LinkType.FirstOtherInvis)
                 dropdown.addOption(LinkType.FirstLast, LinkType.FirstLast)
+                dropdown.addOption(LinkType.FirstLastOtherInvis, LinkType.FirstLastOtherInvis)
                 dropdown.addOption(LinkType.All, LinkType.All)
                 dropdown.addOption(LinkType.AllInvis, LinkType.AllInvis)
                 dropdown.onChange((value) => this.linkOnlyOptions.linkType = value as LinkType)
-                //dropdown.setValue(this.pluginSettings.linkTypePreset)
+                dropdown.setValue(this.pluginSettings.copyCommandLinkTypePreset)
             })
             .addToggle((tgl) => {
-                tgl.setValue(false)
+                tgl.setValue(this.pluginSettings.copyCommandLinkOnlyPreset)
                 tgl.onChange(val => {
                     if (val) {
                         linkTypeDropdown.show();
