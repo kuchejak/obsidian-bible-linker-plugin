@@ -5,9 +5,9 @@ import { getTextOfVerses } from "../logic/copy-command";
 /**
  * Async function for fetching preview 
  */
-async function setPreviewText(previewEl: HTMLTextAreaElement, userInput: string, pluginSettings: PluginSettings, translationPath: string, linkOnlyOptions: LinkOnlyOptions) {
+async function setPreviewText(previewEl: HTMLTextAreaElement, userInput: string, pluginSettings: PluginSettings, translationPath: string, linkOnly: boolean) {
     try {
-        const res = await getTextOfVerses(this.app, userInput, pluginSettings, translationPath, linkOnlyOptions, false);
+        const res = await getTextOfVerses(this.app, userInput, pluginSettings, translationPath, linkOnly, false);
         previewEl.setText(res);
     }
     catch {
@@ -25,11 +25,6 @@ export enum LinkType {
     AllInvis = "All verses, invisible",
 }
 
-export interface LinkOnlyOptions {
-    linkOnly: boolean;
-    linkType: LinkType;
-}
-
 /**
  * Modal that lets you insert bible reference by copying text of given verses
  */
@@ -38,14 +33,11 @@ export default class CopyVerseModal extends Modal {
     onSubmit: (result: string) => void
     pluginSettings: PluginSettings;
     translationPath: string;
-    linkOnlyOptions: LinkOnlyOptions = {
-        linkOnly: false, // todo change to settings
-        linkType: LinkType.First // todo change to settings
-    };
+    linkOnly: boolean;
 
     handleInput = async () => {
         try {
-            const res = await getTextOfVerses(this.app, this.userInput, this.pluginSettings, this.translationPath, this.linkOnlyOptions);
+            const res = await getTextOfVerses(this.app, this.userInput, this.pluginSettings, this.translationPath, this.linkOnly);
             this.close();
             this.onSubmit(res);
         }
@@ -73,7 +65,7 @@ export default class CopyVerseModal extends Modal {
             .setName("Insert reference")
             .addText((text) => text.onChange((value) => {
                 this.userInput = value;
-                setPreviewText(previewEl, this.userInput, this.pluginSettings, this.translationPath, this.linkOnlyOptions);
+                setPreviewText(previewEl, this.userInput, this.pluginSettings, this.translationPath, this.linkOnly);
             })
                 .inputEl.focus()); // Sets focus to input field
 
@@ -100,7 +92,7 @@ export default class CopyVerseModal extends Modal {
                         buttons.forEach((b) => b.removeCta()); // remove CTA from all buttons
                         btn.setCta(); // set CTA to this button
                         this.translationPath = buttonPathMap.get(btn);
-                        setPreviewText(previewEl, this.userInput, this.pluginSettings, this.translationPath);
+                        setPreviewText(previewEl, this.userInput, this.pluginSettings, this.translationPath, this.linkOnly);
                     })
                 })
 
@@ -112,32 +104,13 @@ export default class CopyVerseModal extends Modal {
         }
 
         // add link-only options
-        var linkTypeDropdown: HTMLSelectElement;
+        this.linkOnly = this.pluginSettings.copyCommandLinkOnlyPreset;
         new Setting(contentEl)
             .setName("Link only")
-            .addDropdown((dropdown) => {
-                linkTypeDropdown = dropdown.selectEl;
-                if (!this.pluginSettings.copyCommandLinkOnlyPreset) // hide/show by default based on the preset setting
-                    dropdown.selectEl.hide()
-                dropdown.addOption(LinkType.First, LinkType.First)
-                dropdown.addOption(LinkType.FirstOtherInvis, LinkType.FirstOtherInvis)
-                dropdown.addOption(LinkType.FirstLast, LinkType.FirstLast)
-                dropdown.addOption(LinkType.FirstLastOtherInvis, LinkType.FirstLastOtherInvis)
-                dropdown.addOption(LinkType.All, LinkType.All)
-                dropdown.addOption(LinkType.AllInvis, LinkType.AllInvis)
-                dropdown.onChange((value) => this.linkOnlyOptions.linkType = value as LinkType)
-                dropdown.setValue(this.pluginSettings.copyCommandLinkTypePreset)
-            })
             .addToggle((tgl) => {
                 tgl.setValue(this.pluginSettings.copyCommandLinkOnlyPreset)
                 tgl.onChange(val => {
-                    if (val) {
-                        linkTypeDropdown.show();
-                    }
-                    else {
-                        linkTypeDropdown.hide();
-                    }
-                    this.linkOnlyOptions.linkOnly = val;
+                    this.linkOnly = val;
                 })
             })
 

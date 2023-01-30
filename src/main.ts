@@ -17,7 +17,6 @@ export interface PluginSettings {
     // Links
     linkEndVerse: boolean;
     useInvisibleLinks: boolean;
-    copyCommandLinkTypePreset: CopyLinkType;
     copyCommandLinkOnlyPreset: boolean;
 
     // Output format
@@ -61,7 +60,6 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
     // Links
     linkEndVerse: false,
     useInvisibleLinks: true,
-    copyCommandLinkTypePreset: CopyLinkType.FirstOtherInvis,
     copyCommandLinkOnlyPreset: false,
 
     // Output format

@@ -10,14 +10,14 @@ import { capitalize, getFileByFilename as getTFileByFilename, parseUserVerseInpu
  * @returns String with quote of linked verses. If converting was not successful, returns empty string.
  * @verbose Determines if Notices will be shown or not
  */
-export async function getTextOfVerses(app: App, userInput: string, settings: PluginSettings, translationPath: string, verbose = true): Promise<string> {
+export async function getTextOfVerses(app: App, userInput: string, settings: PluginSettings, translationPath: string, linkOnlyOptions: boolean, verbose = true): Promise<string> {
 
     // eslint-disable-next-line prefer-const
     let { bookAndChapter, beginVerse, endVerse } = parseUserVerseInput(userInput, verbose);
     bookAndChapter = capitalize(bookAndChapter) // For output consistency
     const { fileName, tFile } = getTFileByFilename(app, bookAndChapter, translationPath);
     if (tFile) {
-        return await createCopyOutput(app, tFile, fileName, beginVerse, endVerse, settings, translationPath, verbose);
+        return await createCopyOutput(app, tFile, fileName, beginVerse, endVerse, settings, translationPath, linkOnlyOptions, verbose);
     } else {
         if (verbose) {
             new Notice(`File ${bookAndChapter} not found`);
@@ -101,7 +101,7 @@ function getFileFolderInTranslation(app: App, filename: string, translation: str
     return tFileInfo.tFile.parent.path;
 }
 
-async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, translationPath: string, verbose: boolean) {
+async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, translationPath: string, linkOnlyOptions: boolean, verbose: boolean) {
     const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename);
     const file = app.vault.read(tFile)
     const lines = (await file).split(/\r?\n/)

@@ -130,23 +130,6 @@ export class SettingsTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
-            .setName("Link only type default")
-            .setDesc("What should be selected by default, when you use the link only option")
-            .addDropdown((dropdown) => {
-                dropdown.addOption(CopyLinkType.First, CopyLinkType.First)
-                dropdown.addOption(CopyLinkType.FirstOtherInvis, CopyLinkType.FirstOtherInvis)
-                dropdown.addOption(CopyLinkType.FirstLast, CopyLinkType.FirstLast)
-                dropdown.addOption(CopyLinkType.FirstLastOtherInvis, CopyLinkType.FirstLastOtherInvis)
-                dropdown.addOption(CopyLinkType.All, CopyLinkType.All)
-                dropdown.addOption(CopyLinkType.AllInvis, CopyLinkType.AllInvis)
-                dropdown.setValue(this.plugin.settings.copyCommandLinkTypePreset?.toString() ?? CopyLinkType.First)
-                dropdown.onChange(async (value) => {
-                    this.plugin.settings.copyCommandLinkTypePreset = value as CopyLinkType;
-                    await this.plugin.saveSettings();
-                })
-            })
-
-        new Setting(containerEl)
             .setName("Link only default")
             .setDesc("What the link only option should be set to by default")
             .addToggle((toggle) =>
