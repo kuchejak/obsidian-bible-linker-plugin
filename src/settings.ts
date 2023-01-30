@@ -216,10 +216,6 @@ export class SettingsTab extends PluginSettingTab {
             )
 
         containerEl.createEl("h4", { text: "Multiple translations" });
-        containerEl.createEl("p", {
-            text: "As of right now this is an experimental feature. If you encounter any bugs or you can not figure things out create issue on the GitHub page of this plugin."
-        });
-
 
         new Setting(containerEl)
             .setName("Enable multiple translations")
@@ -237,7 +233,7 @@ export class SettingsTab extends PluginSettingTab {
         if (this.plugin.settings.enableMultipleTranslations) {
             new Setting(containerEl)
                 .setName("Paths to translations with their names")
-                .setDesc("Input full paths to folders containing Bible translations, each trnaslation on separate line. An example of one entry: \"Bible/NIV/\". The plugin will search for corresponding Bible files using given paths as starting points. Make sure there are no duplicate files in given paths, otherwise it is hard to tell what the output will be. The first translation will be considered your main translation.").addTextArea((inputBox) =>
+                .setDesc("Input full paths from the root valut folder to folders containing Bible translations, each trnaslation on separate line. An example of one entry: \"Bible/NIV/\". The plugin will search for corresponding Bible files using given paths as starting points. Make sure there are no duplicate files in given paths, otherwise it is hard to tell what the output will be. The first translation will be considered your main translation.").addTextArea((inputBox) =>
                     inputBox
                         .setPlaceholder("Bible/NIV/\nBible/ESV/")
                         .setValue(this.plugin.settings.translationsPaths)
