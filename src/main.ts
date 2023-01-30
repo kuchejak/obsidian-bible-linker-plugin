@@ -132,6 +132,7 @@ export default class BibleLinkerPlugin extends Plugin {
         this.addCommand({
             id: 'insert-bible-link', // ID left to preserve user's key mappings
             name: "Copy and Link Bible verses",
+            icon: "copy",
             editorCallback: this.openCopyModal
         })
 
@@ -139,6 +140,7 @@ export default class BibleLinkerPlugin extends Plugin {
         this.addCommand({
             id: 'insert-bible-link-obsidian-link',
             name: "Link Bible verses",
+            icon: "link",
             editorCallback: this.openObsidianLinkModal
         })
     }
