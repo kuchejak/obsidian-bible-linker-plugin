@@ -53,9 +53,14 @@ export default class CopyVerseModal extends Modal {
     }
 
 
+
     onOpen() {
         const { contentEl } = this;
         let previewEl: HTMLTextAreaElement;
+
+        const refreshPreview = () => {
+            setPreviewText(previewEl, this.userInput, this.pluginSettings, this.translationPath, this.linkOnly);
+        }
 
         // Add heading 
         contentEl.createEl("h3", { text: "Copy verse by bible reference" });
@@ -65,7 +70,7 @@ export default class CopyVerseModal extends Modal {
             .setName("Insert reference")
             .addText((text) => text.onChange((value) => {
                 this.userInput = value;
-                setPreviewText(previewEl, this.userInput, this.pluginSettings, this.translationPath, this.linkOnly);
+                refreshPreview();
             })
                 .inputEl.focus()); // Sets focus to input field
 
@@ -92,7 +97,7 @@ export default class CopyVerseModal extends Modal {
                         buttons.forEach((b) => b.removeCta()); // remove CTA from all buttons
                         btn.setCta(); // set CTA to this button
                         this.translationPath = buttonPathMap.get(btn);
-                        setPreviewText(previewEl, this.userInput, this.pluginSettings, this.translationPath, this.linkOnly);
+                        refreshPreview();
                     })
                 })
 
@@ -104,13 +109,14 @@ export default class CopyVerseModal extends Modal {
         }
 
         // add link-only options
-        this.linkOnly = this.pluginSettings.copyCommandLinkOnlyPreset;
+        this.linkOnly = this.pluginSettings.linkOnly;
         new Setting(contentEl)
             .setName("Link only")
             .addToggle((tgl) => {
-                tgl.setValue(this.pluginSettings.copyCommandLinkOnlyPreset)
+                tgl.setValue(this.pluginSettings.linkOnly)
                 tgl.onChange(val => {
                     this.linkOnly = val;
+                    refreshPreview();
                 })
             })
 

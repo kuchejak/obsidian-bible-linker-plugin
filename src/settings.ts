@@ -134,9 +134,9 @@ export class SettingsTab extends PluginSettingTab {
             .setDesc("What the link only option should be set to by default")
             .addToggle((toggle) =>
                 toggle
-                    .setValue(this.plugin.settings.copyCommandLinkOnlyPreset)
+                    .setValue(this.plugin.settings.linkOnly)
                     .onChange(async (value) => {
-                        this.plugin.settings.copyCommandLinkOnlyPreset = value;
+                        this.plugin.settings.linkOnly = value;
                         await this.plugin.saveSettings();
                     })
             )

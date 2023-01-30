@@ -17,7 +17,7 @@ export interface PluginSettings {
     // Links
     linkEndVerse: boolean;
     useInvisibleLinks: boolean;
-    copyCommandLinkOnlyPreset: boolean;
+    linkOnly: boolean;
 
     // Output format
     newLines: boolean;
@@ -60,7 +60,7 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
     // Links
     linkEndVerse: false,
     useInvisibleLinks: true,
-    copyCommandLinkOnlyPreset: false,
+    linkOnly: false,
 
     // Output format
     newLines: false,

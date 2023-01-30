@@ -10,14 +10,14 @@ import { capitalize, getFileByFilename as getTFileByFilename, parseUserVerseInpu
  * @returns String with quote of linked verses. If converting was not successful, returns empty string.
  * @verbose Determines if Notices will be shown or not
  */
-export async function getTextOfVerses(app: App, userInput: string, settings: PluginSettings, translationPath: string, linkOnlyOptions: boolean, verbose = true): Promise<string> {
+export async function getTextOfVerses(app: App, userInput: string, settings: PluginSettings, translationPath: string, linkOnly: boolean, verbose = true): Promise<string> {
 
     // eslint-disable-next-line prefer-const
     let { bookAndChapter, beginVerse, endVerse } = parseUserVerseInput(userInput, verbose);
     bookAndChapter = capitalize(bookAndChapter) // For output consistency
     const { fileName, tFile } = getTFileByFilename(app, bookAndChapter, translationPath);
     if (tFile) {
-        return await createCopyOutput(app, tFile, fileName, beginVerse, endVerse, settings, translationPath, linkOnlyOptions, verbose);
+        return await createCopyOutput(app, tFile, fileName, beginVerse, endVerse, settings, translationPath, linkOnly, verbose);
     } else {
         if (verbose) {
             new Notice(`File ${bookAndChapter} not found`);
@@ -101,7 +101,7 @@ function getFileFolderInTranslation(app: App, filename: string, translation: str
     return tFileInfo.tFile.parent.path;
 }
 
-async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, translationPath: string, linkOnlyOptions: boolean, verbose: boolean) {
+async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, translationPath: string, linkOnly: boolean, verbose: boolean) {
     const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename);
     const file = app.vault.read(tFile)
     const lines = (await file).split(/\r?\n/)
@@ -124,9 +124,11 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
 
 
     // 1 - Link to verses
-    let res = settings.prefix;
-    const postfix = settings.postfix ? replaceNewline(settings.postfix) : " ";
-    let pathToUse = "";
+    let postfix = "", res = "", pathToUse = "";
+    if (!linkOnly) {
+        res = settings.prefix;
+        postfix = settings.postfix ? replaceNewline(settings.postfix) : " ";
+    }
     if (settings.enableMultipleTranslations) {
         if (settings.translationLinkingType !== "main") // link the translation that is currently being used
             pathToUse = getFileFolderInTranslation(app, fileName, translationPath);
@@ -145,23 +147,24 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     }
 
     // 2 - Text of verses
-    for (let i = beginVerse; i <= maxVerse; i++) {
-        let versePrefix = "";
-        const versePostfix = settings.insertSpace ? " " : "";
-        if (settings.eachVersePrefix) {
-            versePrefix += settings.eachVersePrefix.replace(/{n}/g, (i - settings.verseOffset).toString());
-            versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
-        }
-        const verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
-        if (settings.newLines) {
-            res += "\n" + settings.prefix + versePrefix + verseText;
-        } else {
-            res += versePrefix + verseText + versePostfix;
+    if (!linkOnly) {
+        for (let i = beginVerse; i <= maxVerse; i++) {
+            let versePrefix = "";
+            const versePostfix = settings.insertSpace ? " " : "";
+            if (settings.eachVersePrefix) {
+                versePrefix += settings.eachVersePrefix.replace(/{n}/g, (i - settings.verseOffset).toString());
+                versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
+            }
+            const verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
+            if (settings.newLines) {
+                res += "\n" + settings.prefix + versePrefix + verseText;
+            } else {
+                res += versePrefix + verseText + versePostfix;
+            }
         }
     }
 
     // 3 - Invisible links
-
     if (!settings.useInvisibleLinks) return res;
     if (beginVerse == maxVerse // No need to add another link, when only one verse is being linked
         && (!settings.enableMultipleTranslations
@@ -169,10 +172,12 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
             || settings.translationLinkingType === "used")) // Only linking one translation - already linked 
         return res;
 
-    if (settings.newLines) {
+    if (settings.newLines && !linkOnly) {
         res += `\n${settings.prefix}`;
     }
-    for (let i = beginVerse; i <= maxVerse; i++) {
+
+    const lastVerseToLink = settings.linkEndVerse ? maxVerse - 1 : maxVerse;
+    for (let i = beginVerse + 1; i <= lastVerseToLink; i++) { // beginVerse + 1 because link to first verse is already inserted before the text
         if (!settings.enableMultipleTranslations) {
             res += `[[${fileName}#${headings[i].heading}|]]`
         }
