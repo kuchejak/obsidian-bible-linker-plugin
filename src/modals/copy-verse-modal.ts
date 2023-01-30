@@ -5,15 +5,27 @@ import { getTextOfVerses } from "../logic/copy-command";
 /**
  * Async function for fetching preview 
  */
-async function setPreviewText(previewEl: HTMLTextAreaElement, userInput: string, pluginSettings: PluginSettings, translationPath: string) {
+async function setPreviewText(previewEl: HTMLTextAreaElement, userInput: string, pluginSettings: PluginSettings, translationPath: string, linkOnlyOptions: LinkOnlyOptions) {
     try {
-        const res = await getTextOfVerses(this.app, userInput, pluginSettings, translationPath, false);
+        const res = await getTextOfVerses(this.app, userInput, pluginSettings, translationPath, linkOnlyOptions, false);
         previewEl.setText(res);
     }
     catch {
         previewEl.setText("");
         return;
     }
+}
+
+export enum LinkType {
+    First = "First verse",
+    FirstLast = "First and last verse",
+    All = "All verses",
+    AllInvis = "All verses, invisible",
+}
+
+export interface LinkOnlyOptions {
+    linkOnly: boolean;
+    linkType: LinkType;
 }
 
 /**
@@ -24,10 +36,14 @@ export default class CopyVerseModal extends Modal {
     onSubmit: (result: string) => void
     pluginSettings: PluginSettings;
     translationPath: string;
+    linkOnlyOptions: LinkOnlyOptions = {
+        linkOnly: false, // todo change to settings
+        linkType: LinkType.First // todo change to settings
+    };
 
     handleInput = async () => {
         try {
-            const res = await getTextOfVerses(this.app, this.userInput, this.pluginSettings, this.translationPath);
+            const res = await getTextOfVerses(this.app, this.userInput, this.pluginSettings, this.translationPath, this.linkOnlyOptions);
             this.close();
             this.onSubmit(res);
         }
@@ -55,7 +71,7 @@ export default class CopyVerseModal extends Modal {
             .setName("Insert reference")
             .addText((text) => text.onChange((value) => {
                 this.userInput = value;
-                setPreviewText(previewEl, this.userInput, this.pluginSettings, this.translationPath);
+                setPreviewText(previewEl, this.userInput, this.pluginSettings, this.translationPath, this.linkOnlyOptions);
             })
                 .inputEl.focus()); // Sets focus to input field
 
@@ -92,6 +108,33 @@ export default class CopyVerseModal extends Modal {
             }
             )
         }
+
+        // add link-only options
+        var linkTypeDropdown: HTMLSelectElement;
+        new Setting(contentEl)
+            .setName("Link only")
+            .addDropdown((dropdown) => {
+                linkTypeDropdown = dropdown.selectEl;
+                dropdown.selectEl.hide()
+                dropdown.addOption(LinkType.First, LinkType.First)
+                dropdown.addOption(LinkType.FirstLast, LinkType.FirstLast)
+                dropdown.addOption(LinkType.All, LinkType.All)
+                dropdown.addOption(LinkType.AllInvis, LinkType.AllInvis)
+                dropdown.onChange((value) => this.linkOnlyOptions.linkType = value as LinkType)
+                //dropdown.setValue(this.pluginSettings.linkTypePreset)
+            })
+            .addToggle((tgl) => {
+                tgl.setValue(false)
+                tgl.onChange(val => {
+                    if (val) {
+                        linkTypeDropdown.show();
+                    }
+                    else {
+                        linkTypeDropdown.hide();
+                    }
+                    this.linkOnlyOptions.linkOnly = val;
+                })
+            })
 
         // Add preview
         contentEl.createEl("label", { text: "Preview" });

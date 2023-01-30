@@ -10,7 +10,7 @@ import { capitalize, getFileByFilename as getTFileByFilename, parseUserVerseInpu
  * @returns String with quote of linked verses. If converting was not successful, returns empty string.
  * @verbose Determines if Notices will be shown or not
  */
-export async function getTextOfVerses(app: App, userInput: string, settings: PluginSettings, translationPath: string, verbose = true,): Promise<string> {
+export async function getTextOfVerses(app: App, userInput: string, settings: PluginSettings, translationPath: string, verbose = true): Promise<string> {
 
     // eslint-disable-next-line prefer-const
     let { bookAndChapter, beginVerse, endVerse } = parseUserVerseInput(userInput, verbose);

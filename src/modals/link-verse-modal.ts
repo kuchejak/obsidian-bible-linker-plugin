@@ -1,7 +1,7 @@
 
 import { App, Modal, Setting } from "obsidian";
 import { PluginSettings } from "../main";
-import {createLinks} from "../logic/link-command";
+import { createLinks } from "../logic/link-command";
 
 export enum LinkType {
     Basic = "Basic",
@@ -22,7 +22,7 @@ export default class LinkVerseModal extends Modal {
     handleInput = async () => {
         try {
             const res = await createLinks(this.app, this.userInput, this.linkType, this.useNewLine, this.pluginSettings)
-			this.close();
+            this.close();
             this.onSubmit(res);
         }
         catch (err) {
@@ -65,7 +65,9 @@ export default class LinkVerseModal extends Modal {
             .setName("Each link on new line?")
             .addToggle((tgl) => {
                 tgl.setValue(this.pluginSettings.newLinePreset)
-                tgl.onChange(val => this.useNewLine = val);
+                tgl.onChange(val => {
+                    this.useNewLine = val;
+                });
             }
             )
 
