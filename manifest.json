@@ -1,9 +1,9 @@
 {
-    "id": "obsidian-bible-linker",
-    "name": "Bible Linker",
-    "version": "1.4.5",
-    "minAppVersion": "0.12.0",
-    "description": "Link multiple bible verses easily",
-    "author": "Jakub Kuchejda",
-    "isDesktopOnly": false
+  "id": "obsidian-bible-linker",
+  "name": "Bible Linker",
+  "version": "1.4.5",
+  "minAppVersion": "0.12.0",
+  "description": "Link multiple bible verses easily",
+  "author": "Jakub Kuchejda",
+  "isDesktopOnly": false
 }
