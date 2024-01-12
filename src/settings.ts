@@ -1,6 +1,6 @@
-import { App, Notice, PluginSettingTab, Setting } from "obsidian";
+import {App, Notice, PluginSettingTab, Setting} from "obsidian";
 import BibleLinkerPlugin from "./main";
-import { LinkType } from "./modals/link-verse-modal";
+import {LinkType} from "./modals/link-verse-modal";
 
 /**
  * Settings for plugin
@@ -270,8 +270,35 @@ export class SettingsTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     })
                 })
-        }
+		}
 
+		containerEl.createEl("h4", { text: "Comments" });
+		containerEl.createEl("p", { text: "Use this if you have comments right in the Biblical text that you want to ignore when copying verses." });
+		new Setting(containerEl)
+			.setName("Comment beginning")
+			.setDesc("String that is used to mark the beginning of a comment, won't be used if it is set to an empty string.")
+			.addText((inputBox) =>
+				inputBox
+					.setPlaceholder("/*")
+					.setValue(this.plugin.settings.commentStart)
+					.onChange(async (value) => {
+						this.plugin.settings.commentStart = value;
+						await this.plugin.saveSettings();
+					})
+			)
+
+		new Setting(containerEl)
+			.setName("Comment ending")
+			.setDesc("String that is used to mark the end of a comment, won't be used if it is set to an empty string.")
+			.addText((inputBox) =>
+				inputBox
+					.setPlaceholder("*/")
+					.setValue(this.plugin.settings.commentEnd)
+					.onChange(async (value) => {
+						this.plugin.settings.commentEnd = value;
+						await this.plugin.saveSettings();
+					})
+			)
 
         // LINK -------------------------------------------------------------------------------------------------------------
 

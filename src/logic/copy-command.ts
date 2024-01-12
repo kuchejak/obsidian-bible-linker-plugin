@@ -1,6 +1,6 @@
 import { App, HeadingCache, Notice, TFile } from "obsidian";
 import { PluginSettings } from "../main";
-import { isOBSKFile } from "../utils/regexes";
+import {escapeForRegex, isOBSKFile} from "../utils/regexes";
 import { capitalize, getFileByFilename as getTFileByFilename, parseUserVerseInput } from "./common";
 
 /**
@@ -163,7 +163,14 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
                 versePrefix += settings.eachVersePrefix.replace(/{n}/g, (i - settings.verseOffset).toString());
                 versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
             }
-            const verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
+            let verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
+
+			if (settings.commentStart !== "" && settings.commentEnd !== "") {
+				const escapedStart = escapeForRegex(settings.commentStart);
+				const escapedEnd = escapeForRegex(settings.commentEnd);
+				const replaceRegex = new RegExp(`${escapedStart}.*?${escapedEnd}`, 'gs');
+				verseText = verseText.replace(replaceRegex, '');
+			}
             if (settings.newLines) {
                 res += "\n" + settings.prefix + versePrefix + verseText;
             } else {

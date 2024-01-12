@@ -34,6 +34,10 @@ export interface PluginSettings {
     parsedTranslationPaths: string[]; // callculated from translations paths, not shown to the user
     translationLinkingType: string;
 
+	// Comments
+	commentStart: string,
+	commentEnd: string,
+
     // LINK
     // File format
     linkSeparator: string;
@@ -77,6 +81,10 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
     translationsPaths: "",
     parsedTranslationPaths: [],
     translationLinkingType: "all",
+
+	// Comments
+	commentStart: "",
+	commentEnd: "",
 
     // LINK
     // File format
