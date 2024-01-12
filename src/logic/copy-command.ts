@@ -181,7 +181,7 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
 
     // 3 - Invisible links
     if (!settings.useInvisibleLinks) return res;
-    if (beginVerse == maxVerse // No need to add another link, when only one verse is being linked
+    if ((beginVerse == maxVerse || (settings.linkEndVerse && beginVerse == maxVerse - 1)) // No need to add another link, when only one verse is being linked
         && (!settings.enableMultipleTranslations
             || settings.translationLinkingType === "main"
             || settings.translationLinkingType === "used")) // Only linking one translation - already linked 
