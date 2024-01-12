@@ -145,6 +145,7 @@ export class SettingsTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName("Put each verse on a new line?")
+			.setClass("important-setting")
             .setDesc("Each verse is inserted on a new line (with Link prefix).")
             .addToggle((toggle) =>
                 toggle
@@ -152,21 +153,39 @@ export class SettingsTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.newLines = value;
                         await this.plugin.saveSettings();
+						this.display();
                     })
             )
 
-        new Setting(containerEl)
-            .setName("Insert space between verses?")
-            .setDesc("Should space be inserted between verses? (Only applied when Put each verse on a new line? is se to false. Useful for languages such as Chinese.)")
-            .setDisabled(!this.plugin.settings.newLines)
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.insertSpace)
-                    .onChange(async (value) => {
-                        this.plugin.settings.insertSpace = value;
-                        await this.plugin.saveSettings();
-                    })
-            )
+		if (this.plugin.settings.newLines) {
+			new Setting(containerEl)
+				.setName("First line prefix")
+				.setDesc("Special prefix that will be inserted in front of the first line only, right after the \"Line prefix\". Handy for callouts. (Only applied when Put each verse on a new line? is set to true)")
+				.addText((inputBox) =>
+					inputBox
+						.setPlaceholder("First line prefix")
+						.setValue(this.plugin.settings.firstLinePrefix)
+						.onChange(async (value) => {
+							this.plugin.settings.firstLinePrefix = value;
+							await this.plugin.saveSettings();
+						})
+				)
+		}
+		else {
+			new Setting(containerEl)
+				.setName("Insert space between verses?")
+				.setDesc("Should space be inserted between verses? (Only applied when Put each verse on a new line? is set to false. Useful for languages such as Chinese.)")
+				.setDisabled(!this.plugin.settings.newLines)
+				.addToggle((toggle) =>
+					toggle
+						.setValue(this.plugin.settings.insertSpace)
+						.onChange(async (value) => {
+							this.plugin.settings.insertSpace = value;
+							await this.plugin.saveSettings();
+						})
+				)
+		}
+
 
 
         containerEl.createEl("h4", { text: "Notation" });

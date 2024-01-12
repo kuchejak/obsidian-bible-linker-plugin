@@ -21,6 +21,7 @@ export function capitalize(str: string) {
 /**
  * Parses input from user, expecting chapter and verses
  * @param userInput
+ * @param verbose Whether or not user should be notified if the link is incorrect
  */
 export function parseUserVerseInput(userInput: string, verbose = true) {
     let bookAndChapter;

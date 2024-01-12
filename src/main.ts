@@ -1,7 +1,7 @@
-import { MarkdownView, Plugin } from 'obsidian';
-import CopyVerseModal, { LinkType as CopyLinkType } from 'src/modals/copy-verse-modal';
-import LinkVerseModal, { LinkType } from './modals/link-verse-modal';
-import { SettingsTab } from './settings';
+import {MarkdownView, Plugin} from 'obsidian';
+import CopyVerseModal from 'src/modals/copy-verse-modal';
+import LinkVerseModal, {LinkType} from './modals/link-verse-modal';
+import {SettingsTab} from './settings';
 
 export interface PluginSettings {
     // COPY
@@ -21,6 +21,7 @@ export interface PluginSettings {
 
     // Output format
     newLines: boolean;
+	firstLinePrefix: string;
     insertSpace: boolean;
 
     // Notation
@@ -64,6 +65,7 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 
     // Output format
     newLines: false,
+	firstLinePrefix: "",
     insertSpace: true,
 
     // Notation

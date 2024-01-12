@@ -7,6 +7,10 @@ import { capitalize, getFileByFilename as getTFileByFilename, parseUserVerseInpu
  * Converts biblical reference to text of given verses
  * @param app App instance
  * @param userInput User Input (link to verse)
+ * @param settings Plugin settings
+ * @param translationPath Path to translation that should be used
+ * @param linkOnly Whether to insert output only link or also include text
+ * @param verbose Whether or not user should be notified if the link is incorrect
  * @returns String with quote of linked verses. If converting was not successful, returns empty string.
  * @verbose Determines if Notices will be shown or not
  */
@@ -110,9 +114,9 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     const beginVerseNoOffset = beginVerse
     beginVerse += settings.verseOffset
     endVerse += settings.verseOffset
-    var nrOfVerses = headings.length - 1;
-    var maxVerse = endVerse < nrOfVerses ? endVerse : nrOfVerses; // if endverse is bigger than chapter allows, it is lowered to maximum
-    var maxVerseNoOffset = maxVerse - settings.verseOffset;
+	const nrOfVerses = headings.length - 1;
+	const maxVerse = endVerse < nrOfVerses ? endVerse : nrOfVerses; // if endverse is bigger than chapter allows, it is lowered to maximum
+    const maxVerseNoOffset = maxVerse - settings.verseOffset;
 
 
     if (beginVerse > maxVerse) {
@@ -136,6 +140,10 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
             pathToUse = getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first());
         }
     }
+
+	if (settings.newLines) {
+		res += `${settings.firstLinePrefix}`
+	}
 
     if (beginVerse === maxVerse) {
         res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
