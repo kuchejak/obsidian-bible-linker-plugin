@@ -1,7 +1,6 @@
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 import BibleLinkerPlugin from "./main";
 import { LinkType } from "./modals/link-verse-modal";
-import { LinkType as CopyLinkType } from "./modals/copy-verse-modal";
 
 /**
  * Settings for plugin
@@ -19,7 +18,7 @@ export class SettingsTab extends PluginSettingTab {
 
         containerEl.empty();
 
-        containerEl.createEl("h2", { text: "Copy and Link Bible verses command" });
+        containerEl.createEl("h1", { text: "Copy and Link Bible verses command" });
         containerEl.createEl("h4", { text: "Functional" });
 
         new Setting(containerEl)
@@ -257,7 +256,7 @@ export class SettingsTab extends PluginSettingTab {
 
         // LINK -------------------------------------------------------------------------------------------------------------
 
-        containerEl.createEl("h2", { text: "Link Bible verses command" });
+        containerEl.createEl("h1", { text: "Link Bible verses command" });
 
         containerEl.createEl("h4", { text: "File format" });
         new Setting(containerEl)
