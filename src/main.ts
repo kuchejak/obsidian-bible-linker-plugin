@@ -47,8 +47,11 @@ export interface PluginSettings {
     linkTypePreset: LinkType;
     newLinePreset: boolean;
 
-    // Misc
-    verifyFilesWhenLinking: boolean;
+	// Format
+	shouldCapitalizeBookNames: boolean;
+
+	// Misc
+	verifyFilesWhenLinking: boolean;
 }
 
 const DEFAULT_SETTINGS: Partial<PluginSettings> = {
@@ -95,9 +98,12 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
     linkTypePreset: LinkType.Basic,
     newLinePreset: true,
 
-    // Misc
-    verifyFilesWhenLinking: false,
-}
+	// Format
+	shouldCapitalizeBookNames: true,
+
+	// Misc
+	verifyFilesWhenLinking: false,
+};
 
 export default class BibleLinkerPlugin extends Plugin {
     settings: PluginSettings;

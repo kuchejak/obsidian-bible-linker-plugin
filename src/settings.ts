@@ -351,17 +351,32 @@ export class SettingsTab extends PluginSettingTab {
                 })
             })
 
-        new Setting(containerEl)
-            .setName("Use new lines default value")
-            .setDesc("Value that will be selected by default in link modal.")
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.newLinePreset)
-                    .onChange(async (value) => {
-                        this.plugin.settings.newLinePreset = value;
-                        await this.plugin.saveSettings();
-                    })
-            )
+		new Setting(containerEl)
+			.setName("Use new lines default value")
+			.setDesc("Value that will be selected by default in link modal.")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.newLinePreset)
+					.onChange(async (value) => {
+						this.plugin.settings.newLinePreset = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		containerEl.createEl("h4", { text: "Format" });
+		new Setting(containerEl)
+			.setName("Capitalize book names?")
+			.setDesc(
+				'Should book names be automatically capitalized? For example "1cOr" will be turned into "1Cor".'
+			)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.shouldCapitalizeBookNames)
+					.onChange(async (value) => {
+						this.plugin.settings.shouldCapitalizeBookNames = value;
+						await this.plugin.saveSettings();
+					})
+			);
 
         containerEl.createEl("h4", { text: "Misc" });
 
