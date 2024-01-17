@@ -141,7 +141,7 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
         }
     }
 
-	if (settings.newLines) {
+	if (settings.newLines && !linkOnly) {
 		res += `${settings.firstLinePrefix}`
 	}
 
