@@ -6,6 +6,7 @@ export enum LinkType {
 	Basic = "Basic",
 	Embedded = "Embedded",
 	Invisible = "Invisible",
+	FirstAndLast = "FirstAndLast",
 }
 
 /**
@@ -66,6 +67,7 @@ export default class LinkVerseModal extends Modal {
 		new Setting(contentEl).setName("Link type").addDropdown((dropdown) => {
 			dropdown.addOption(LinkType.Basic, LinkType.Basic);
 			dropdown.addOption(LinkType.Embedded, LinkType.Embedded);
+			dropdown.addOption(LinkType.FirstAndLast, "Show First & Last");
 			dropdown.addOption(LinkType.Invisible, LinkType.Invisible);
 			dropdown.onChange((value) => (this.linkType = value as LinkType));
 			dropdown.setValue(this.pluginSettings.linkTypePreset);

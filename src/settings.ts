@@ -189,10 +189,11 @@ export class SettingsTab extends PluginSettingTab {
 
 
         containerEl.createEl("h4", { text: "Notation" });
+		containerEl.createEl("p", { text: "Also used in the link command when the \"Show First & Last\" link type is used." });
 
         new Setting(containerEl)
             .setName("One verse notation")
-            .setDesc("This is the symbol that will be used between chapter number and verse number when copying one verse. For example \".\" → Gen 1.1.")
+            .setDesc("This is the symbol that will be used between chapter number and verse number when copying one verse. For example \".\" → Gen 1.1." )
             .addText((inputBox) =>
                 inputBox
                     .setPlaceholder("Insert notation symbol here")
@@ -234,7 +235,7 @@ export class SettingsTab extends PluginSettingTab {
         if (this.plugin.settings.enableMultipleTranslations) {
             new Setting(containerEl)
                 .setName("Paths to translations with their names")
-                .setDesc("Input full paths from the root valut folder to folders containing Bible translations, each trnaslation on separate line. An example of one entry: \"Bible/NIV/\". The plugin will search for corresponding Bible files using given paths as starting points. Make sure there are no duplicate files in given paths, otherwise it is hard to tell what the output will be. The first translation will be considered your main translation.").addTextArea((inputBox) =>
+                .setDesc("Input full paths from the root vault folder to folders containing Bible translations, each translation on separate line. An example of one entry: \"Bible/NIV/\". The plugin will search for corresponding Bible files using given paths as starting points. Make sure there are no duplicate files in given paths, otherwise it is hard to tell what the output will be. The first translation will be considered your main translation.").addTextArea((inputBox) =>
                     inputBox
                         .setPlaceholder("Bible/NIV/\nBible/ESV/")
                         .setValue(this.plugin.settings.translationsPaths)
@@ -242,7 +243,7 @@ export class SettingsTab extends PluginSettingTab {
                             const inputPaths = value.split(/\r?\n|\r/); // split user input by lines (regex takes into account all possible line endings)
                             const paths: string[] = [];
                             inputPaths.forEach((path) => { // parse user input for later use
-                                if (path.at(-1) !== "/") { // Add potentionally missing '/' to path
+                                if (path.at(-1) !== "/") { // Add potentially missing '/' to path
                                     paths.push(path + "/");
                                 }
                                 else {
@@ -343,6 +344,7 @@ export class SettingsTab extends PluginSettingTab {
             .addDropdown((dropdown) => {
                 dropdown.addOption(LinkType.Basic, LinkType.Basic)
                 dropdown.addOption(LinkType.Embedded, LinkType.Embedded)
+				dropdown.addOption(LinkType.FirstAndLast, "Show First & Last");
                 dropdown.addOption(LinkType.Invisible, LinkType.Invisible)
                 dropdown.setValue(this.plugin.settings.linkTypePreset)
                 dropdown.onChange(async (value) => {

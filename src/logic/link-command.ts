@@ -1,13 +1,8 @@
-import { App, Notice } from "obsidian";
-import { LinkType } from "../modals/link-verse-modal";
-import { PluginSettings } from "../main";
-import { multipleChapters } from "../utils/regexes";
-import {
-	capitalize,
-	getFileByFilename,
-	parseUserBookInput,
-	parseUserVerseInput,
-} from "./common";
+import {App, Notice} from "obsidian";
+import {LinkType} from "../modals/link-verse-modal";
+import {PluginSettings} from "../main";
+import {multipleChapters} from "../utils/regexes";
+import {capitalize, getFileByFilename, parseUserBookInput, parseUserVerseInput,} from "./common";
 
 /**
  * Converts biblical reference to links to given verses or books
@@ -75,9 +70,10 @@ async function getLinksForVerses(
 	}
 
 	let res = "";
-	const beginning = linkType === LinkType.Embedded ? "!" : "";
-	const ending = linkType === LinkType.Invisible ? "|" : "";
 	for (let i = beginVerse; i <= endVerse; i++) {
+		const beginning = getLinkBeginning(i, beginVerse, endVerse, linkType);
+		const ending = getLinkEnding(i, beginVerse, endVerse, linkType, bookAndChapter, settings);
+
 		res += `${beginning}[[${bookAndChapter}${settings.linkSeparator}${settings.versePrefix}${i}${ending}]]`;
 		if (useNewLine) {
 			res += "\n";
@@ -85,6 +81,36 @@ async function getLinksForVerses(
 	}
 	return res;
 }
+
+function getLinkBeginning(currentVerse: number, beginVerse: number, endVerse: number, linkType: LinkType): string {
+	switch (linkType) {
+		case LinkType.Embedded:
+			return "!"
+		default:
+			return ""
+	}
+}
+
+function getLinkEnding(currentVerse: number, beginVerse: number, endVerse: number, linkType: LinkType, bookAndChapter: string, settings: PluginSettings): string {
+	switch (linkType){
+		case LinkType.Invisible:
+			return "|"
+		case LinkType.FirstAndLast: {
+			if (beginVerse === endVerse) {
+				return `|${bookAndChapter}${settings.oneVerseNotation}${currentVerse}`
+			} else if (currentVerse === beginVerse) {
+				return `|${bookAndChapter}${settings.multipleVersesNotation}${currentVerse}`
+			}
+			if (currentVerse === endVerse) {
+				return `|-${currentVerse}`
+			}
+			return "|"; // links between first and last verse are invisible
+		}
+		default:
+			return ""
+	}
+}
+
 
 /**
  * Creates copy command output when linking multiple chapters
