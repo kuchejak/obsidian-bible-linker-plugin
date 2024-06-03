@@ -1,6 +1,6 @@
 import { App, HeadingCache, Notice, TFile } from "obsidian";
 import { PluginSettings } from "../main";
-import {escapeForRegex, isOBSKFile} from "../utils/regexes";
+import {bookAndChapterRegEx, escapeForRegex, isOBSKFileRegEx} from "../utils/regexes";
 import { capitalize, getFileByFilename as getTFileByFilename, parseUserVerseInput } from "./common";
 
 /**
@@ -19,7 +19,7 @@ export async function getTextOfVerses(app: App, userInput: string, settings: Plu
     // eslint-disable-next-line prefer-const
     let { bookAndChapter, beginVerse, endVerse } = parseUserVerseInput(userInput, verbose);
     bookAndChapter = capitalize(bookAndChapter) // For output consistency
-    const { fileName, tFile } = getTFileByFilename(app, bookAndChapter, translationPath);
+    const { fileName, tFile } = getTFileByFilename(app, bookAndChapter, translationPath, settings);
     if (tFile) {
         return await createCopyOutput(app, tFile, fileName, beginVerse, endVerse, settings, translationPath, linkOnly, verbose);
     } else {
@@ -83,30 +83,39 @@ function replaceNewline(input: string) {
 }
 
 /**
+ * Replaces the given book with its display value defined in the settings. If no mapping exists, the original value is returned.
+ * @param book Book that should be replaced
+ * @param settings Plugin's settings
+ */
+function getDisplayBookName(book: string, settings: PluginSettings) {
+	return settings.outputBookMap[book.toLowerCase()] ?? book;
+}
+
+/**
  * Takes orginal filename and converts it to human-readable version if Bible study kit is used (removes "-" and leading zeros)
  */
-function createBookAndChapterOutput(fileBasename: string) {
-    if (isOBSKFile.test(fileBasename)) {
-        // eslint-disable-next-line prefer-const
-        let [, filename, chapter] = fileBasename.match(isOBSKFile);
-        if (chapter.toString()[0] === "0") {
-            chapter = chapter.substring(1);
-        }
-        return filename + " " + chapter;
-    }
-    return fileBasename;
+function createBookAndChapterOutput(fileBasename: string, settings: PluginSettings) {
+	const isOBSK = isOBSKFileRegEx.test(fileBasename);
+	const regex = isOBSK ? isOBSKFileRegEx : bookAndChapterRegEx;
+
+	// eslint-disable-next-line prefer-const
+	let [, book, chapter] = fileBasename.match(regex);
+	if (isOBSK && chapter.toString()[0] === "0") { // remove leading zeros in OBSK chapters (eg. Gen-01)
+		chapter = chapter.substring(1);
+	}
+	return getDisplayBookName(book, settings) + " " + chapter;
 }
 
 /**
  * Returns path to folder in which given file is located for main translation
  */
-function getFileFolderInTranslation(app: App, filename: string, translation: string) {
-    const tFileInfo = getTFileByFilename(app, filename, translation);
+function getFileFolderInTranslation(app: App, filename: string, translation: string, settings: PluginSettings) {
+    const tFileInfo = getTFileByFilename(app, filename, translation, settings);
     return tFileInfo.tFile.parent.path;
 }
 
 async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, translationPath: string, linkOnly: boolean, verbose: boolean) {
-    const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename);
+    const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename, settings);
     const file = app.vault.read(tFile)
     const lines = (await file).split(/\r?\n/)
     const verseHeadingLevel = settings.verseHeadingLevel
@@ -135,9 +144,9 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     }
     if (settings.enableMultipleTranslations) {
         if (settings.translationLinkingType !== "main") // link the translation that is currently being used
-            pathToUse = getFileFolderInTranslation(app, fileName, translationPath);
+            pathToUse = getFileFolderInTranslation(app, fileName, translationPath, settings);
         else { // link main translation
-            pathToUse = getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first());
+            pathToUse = getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first(), settings);
         }
     }
 
@@ -200,22 +209,22 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
             let translationPathsToUse: string[] = [];
             switch (settings.translationLinkingType) {
                 case "all":
-                    translationPathsToUse = settings.parsedTranslationPaths.map((tr) => getFileFolderInTranslation(app, fileName, tr))
+                    translationPathsToUse = settings.parsedTranslationPaths.map((tr) => getFileFolderInTranslation(app, fileName, tr, settings))
                     break;
                 case "used":
-                    translationPathsToUse = [getFileFolderInTranslation(app, fileName, translationPath)]
+                    translationPathsToUse = [getFileFolderInTranslation(app, fileName, translationPath, settings)]
                     break;
                 case "usedAndMain":
                     if (translationPath !== settings.parsedTranslationPaths.first()) {
-                        translationPathsToUse = [getFileFolderInTranslation(app, fileName, translationPath),
-                        getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first())];
+                        translationPathsToUse = [getFileFolderInTranslation(app, fileName, translationPath, settings),
+                        getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first(), settings)];
                     }
                     else {
-                        translationPathsToUse = [getFileFolderInTranslation(app, fileName, translationPath)];
+                        translationPathsToUse = [getFileFolderInTranslation(app, fileName, translationPath, settings)];
                     }
                     break;
                 case "main":
-                    translationPathsToUse = [getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first())];
+                    translationPathsToUse = [getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first(), settings)];
                     break;
                 default:
                     break;

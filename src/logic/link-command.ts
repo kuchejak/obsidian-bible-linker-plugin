@@ -1,7 +1,7 @@
 import {App, Notice} from "obsidian";
 import {LinkType} from "../modals/link-verse-modal";
 import {PluginSettings} from "../main";
-import {multipleChapters} from "../utils/regexes";
+import {multipleChaptersRegEx} from "../utils/regexes";
 import {capitalize, getFileByFilename, parseUserBookInput, parseUserVerseInput,} from "./common";
 
 /**
@@ -10,6 +10,7 @@ import {capitalize, getFileByFilename, parseUserBookInput, parseUserVerseInput,}
  * @param userInput User Input (link to verse or chapter)
  * @param linkType Type of link that should be used
  * @param useNewLine Whether or not should each link be on new line
+ * @param settings Plugin's settings
  * @returns String with quote of linked verses. If converting was not successful, returns empty string.
  */
 export async function createLinks(
@@ -19,7 +20,7 @@ export async function createLinks(
 	useNewLine: boolean,
 	settings: PluginSettings
 ) {
-	if (multipleChapters.test(userInput)) {
+	if (multipleChaptersRegEx.test(userInput)) {
 		return getLinksForChapters(
 			app,
 			userInput,
@@ -55,7 +56,7 @@ async function getLinksForVerses(
 		bookAndChapter = capitalize(bookAndChapter); // For output consistency
 	}
 	if (settings.verifyFilesWhenLinking) {
-		const { fileName, tFile } = getFileByFilename(app, bookAndChapter);
+		const { fileName, tFile } = getFileByFilename(app, bookAndChapter, "/", settings);
 		if (!tFile) {
 			new Notice(
 				`File "${fileName}" does not exist and verify files is set to true`

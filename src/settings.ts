@@ -301,6 +301,59 @@ export class SettingsTab extends PluginSettingTab {
 					})
 			)
 
+		containerEl.createEl("h4", { text: "Convertors" });
+		function parseStringToDictionary(input: string): { [key: string]: string } {
+			const dictionary: { [key: string]: string } = {};
+
+			// Normalize the line endings to \n
+			const normalizedInput = input.replace(/\r\n|\r/g, '\n');
+
+			// Split the input string by line breaks
+			const lines = normalizedInput.split('\n');
+
+			// Process each line to fill the dictionary
+			lines.forEach(line => {
+				// Check if the line contains a colon
+				if (line.includes(':')) {
+					const [key, value] = line.split(':');
+					if (key && value) {
+						dictionary[key.toLowerCase()] = value;
+					}
+				}
+			});
+
+			return dictionary;
+		}
+
+		new Setting(containerEl)
+			.setName("Output book name convertor")
+			.setDesc("You can specify conversions that will be applied to the visible book name alias. For example, if you put in \"3J:3 John\", the output will be changed from \"[[3 John-01#v1|3J 1.1]]\" to \"[[3 John-01#v1|3 John 1.1]]\". The format used is \"From:To\", each entry on it's own line. TIP: ChatGPT (or similar AI tool) will probably be able to help you when creating the input.")
+			.setClass("big-text-area")
+			.addTextArea((inputBox) =>
+				inputBox
+					.setPlaceholder("Gn:Genesis\nEx:Exodus\n...")
+					.setValue(this.plugin.settings.outputBookMapString)
+					.onChange(async (value) => {
+						this.plugin.settings.outputBookMapString = value;
+						this.plugin.settings.outputBookMap = parseStringToDictionary(value);
+						await this.plugin.saveSettings();
+					})
+			)
+
+		new Setting(containerEl)
+			.setName("Input book name convertor")
+			.setDesc("You can specify conversions that will be applied to the used book name when searching for text of a verse. For example, if you put in \"Gn:Gen\", the input \"Gn 1,1\" will work even when the file is called \"Gen 1,1\". The format used is again \"From:To\", each entry on it's own line, and will be used by the plugin when the search fails using the unchanged input. Multiple entries can have same result mapping, for example you can use \"G:Gen\" and \"Gn:Gen\".")
+			.setClass("big-text-area")
+			.addTextArea((inputBox) =>
+				inputBox
+					.setPlaceholder("G:Gen\nGn:Gen\nL:Lk\n...")
+					.setValue(this.plugin.settings.inputBookMapString)
+					.onChange(async (value) => {
+						this.plugin.settings.inputBookMapString = value;
+						this.plugin.settings.inputBookMap = parseStringToDictionary(value);
+						await this.plugin.saveSettings();
+					})
+			)
         // LINK -------------------------------------------------------------------------------------------------------------
 
         containerEl.createEl("h1", { text: "Link Bible verses command" });

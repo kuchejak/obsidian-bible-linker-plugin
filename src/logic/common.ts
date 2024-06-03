@@ -2,12 +2,13 @@
  * Capitalizes given string (skips leading whitespaces and numbers)
  */
 import {
-	bookAndChapterRegexForOBSK,
-	multipleChapters,
+	bookAndChapterRegEx,
+	multipleChaptersRegEx,
 	multipleVersesRegEx,
 	oneVerseRegEx,
 } from "../utils/regexes";
 import { App, Notice } from "obsidian";
+import {PluginSettings} from "../main";
 
 /**
  * Capitalizes given string, taking leading numbers into account
@@ -75,10 +76,10 @@ export function parseUserBookInput(userInput: string) {
 	let lastChapter;
 
 	switch (true) {
-		case multipleChapters.test(userInput): {
+		case multipleChaptersRegEx.test(userInput): {
 			// one verse
 			const [, matchedBook, matchedFirstChapter, matchedLastChapter] =
-				userInput.match(multipleChapters);
+				userInput.match(multipleChaptersRegEx);
 			book = matchedBook.trim();
 			firstChapter = Number(matchedFirstChapter);
 			lastChapter = Number(matchedLastChapter);
@@ -99,13 +100,16 @@ export function parseUserBookInput(userInput: string) {
  * @param app
  * @param filename Name of file that should be searched
  * @param path Path where the search should occure
+ * @param settings Plugin settings
  */
-export function getFileByFilename(app: App, filename: string, path = "/") {
+export function getFileByFilename(app: App, filename: string, path: string, settings: PluginSettings) {
+	path = path ?? "/";
 	let filenameCopy = filename;
+	filenameCopy = tryUsingInputBookMap(filenameCopy, settings);
 	let tFile = app.metadataCache.getFirstLinkpathDest(filenameCopy, path);
 	if (!tFile) {
 		// handle "Bible study kit" file naming, eg. Gen-01 instead of Gen 1
-		filenameCopy = tryConvertToOBSKFileName(filenameCopy);
+		filenameCopy = tryConvertToOBSKFileName(filenameCopy, settings);
 		tFile = app.metadataCache.getFirstLinkpathDest(filenameCopy, path);
 	}
 	return { fileName: filenameCopy, tFile };
@@ -114,16 +118,35 @@ export function getFileByFilename(app: App, filename: string, path = "/") {
 /**
  * Tries to convert file name to Obsidian Study Kit file name
  * @param bookAndChapter File name that should be converted
+ * @param settings Plugin's settings
  * @returns file name in Obsidain Study Kit naming system
  */
-export function tryConvertToOBSKFileName(bookAndChapter: string) {
-	if (bookAndChapterRegexForOBSK.test(bookAndChapter)) {
+export function tryConvertToOBSKFileName(bookAndChapter: string, settings: PluginSettings) {
+	if (bookAndChapterRegEx.test(bookAndChapter)) {
 		// Valid chapter name
 		// eslint-disable-next-line prefer-const
-		let [, book, number] = bookAndChapter.match(bookAndChapterRegexForOBSK);
-		if (number.length == 1) {
-			number = `0${number}`;
+		let [, book, chapter] = bookAndChapter.match(bookAndChapterRegEx);
+		if (chapter.length == 1) {
+			chapter = `0${chapter}`;
 		}
-		return `${book}-${number}`;
+		const convertedBook = settings.inputBookMap[book.toLowerCase()] ?? book;
+		return `${convertedBook}-${chapter}`;
 	}
+	return bookAndChapter;
+}
+/**
+ * Tries to convert file name using Input map
+ * @param bookAndChapter File name that should be converted
+ * @param settings Plugin's settings
+ * @returns file name in Obsidain Study Kit naming system
+ */
+export function tryUsingInputBookMap(bookAndChapter: string, settings: PluginSettings) {
+	if (bookAndChapterRegEx.test(bookAndChapter)) {
+		// Valid chapter name
+		// eslint-disable-next-line prefer-const
+		let [, book, chapter] = bookAndChapter.match(bookAndChapterRegEx);
+		const convertedBook = settings.inputBookMap[book.toLowerCase()] ?? book;
+		return `${convertedBook} ${chapter}`;
+	}
+	return bookAndChapter;
 }

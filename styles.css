@@ -11,3 +11,18 @@
 .important-setting .setting-item-name {
     font-weight: bold
 }
+
+.big-text-area   {
+	display: flex;
+	flex-direction: column;
+}
+
+.big-text-area .setting-item-control {
+	width: 50%;
+}
+
+.big-text-area textarea {
+	margin-top: 1rem;
+	min-height: 10rem;
+	width: 100%;
+}

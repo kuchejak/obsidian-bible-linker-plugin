@@ -38,6 +38,12 @@ export interface PluginSettings {
 	commentStart: string,
 	commentEnd: string,
 
+	// Convertors
+	outputBookMapString: string,
+	outputBookMap: { [key: string]: string }
+	inputBookMapString: string,
+	inputBookMap: { [key: string]: string }
+
     // LINK
     // File format
     linkSeparator: string;
@@ -88,6 +94,12 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 	// Comments
 	commentStart: "",
 	commentEnd: "",
+
+	// Convertors
+	outputBookMapString: "",
+	outputBookMap: {},
+	inputBookMapString: "",
+	inputBookMap: {},
 
     // LINK
     // File format
