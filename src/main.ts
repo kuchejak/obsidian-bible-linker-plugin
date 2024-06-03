@@ -117,6 +117,14 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 	verifyFilesWhenLinking: false,
 };
 
+
+function replaceRangeAndMoveCursor(str: string, view: MarkdownView) {
+	view.editor.replaceRange(str, view.editor.getCursor());
+	let offset = view.editor.posToOffset(view.editor.getCursor())
+	offset += str.length;
+	view.editor.setCursor(view.editor.offsetToPos(offset));
+}
+
 export default class BibleLinkerPlugin extends Plugin {
     settings: PluginSettings;
 
@@ -125,7 +133,8 @@ export default class BibleLinkerPlugin extends Plugin {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (view) {
             new CopyVerseModal(this.app, this.settings,
-                (str) => view.editor.replaceRange(str, view.editor.getCursor())).open();
+                (str) => replaceRangeAndMoveCursor(str, view)
+			).open();
         }
     }
 
@@ -134,7 +143,8 @@ export default class BibleLinkerPlugin extends Plugin {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (view) {
             new LinkVerseModal(this.app, this.settings,
-                (str) => view.editor.replaceRange(str, view.editor.getCursor())).open();
+                (str) => replaceRangeAndMoveCursor(str, view)
+			).open();
         }
     }
 
