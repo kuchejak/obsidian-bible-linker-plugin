@@ -105,48 +105,38 @@ export function parseUserBookInput(userInput: string) {
 export function getFileByFilename(app: App, filename: string, path: string, settings: PluginSettings) {
 	path = path ?? "/";
 	let filenameCopy = filename;
-	filenameCopy = tryUsingInputBookMap(filenameCopy, settings);
-	let tFile = app.metadataCache.getFirstLinkpathDest(filenameCopy, path);
-	if (!tFile) {
-		// handle "Bible study kit" file naming, eg. Gen-01 instead of Gen 1
-		filenameCopy = tryConvertToOBSKFileName(filenameCopy, settings);
-		tFile = app.metadataCache.getFirstLinkpathDest(filenameCopy, path);
-	}
-	return { fileName: filenameCopy, tFile };
-}
 
-/**
- * Tries to convert file name to Obsidian Study Kit file name
- * @param bookAndChapter File name that should be converted
- * @param settings Plugin's settings
- * @returns file name in Obsidain Study Kit naming system
- */
-export function tryConvertToOBSKFileName(bookAndChapter: string, settings: PluginSettings) {
-	if (bookAndChapterRegEx.test(bookAndChapter)) {
-		// Valid chapter name
-		// eslint-disable-next-line prefer-const
-		let [, book, chapter] = bookAndChapter.match(bookAndChapterRegEx);
-		if (chapter.length == 1) {
-			chapter = `0${chapter}`;
-		}
-		const convertedBook = settings.inputBookMap[book.toLowerCase()] ?? book;
-		return `${convertedBook}-${chapter}`;
+	// Try unaltered
+	let tFile = app.metadataCache.getFirstLinkpathDest(filenameCopy, path);
+	if (tFile) {
+		return { fileName: filenameCopy, tFile };
 	}
-	return bookAndChapter;
-}
-/**
- * Tries to convert file name using Input map
- * @param bookAndChapter File name that should be converted
- * @param settings Plugin's settings
- * @returns file name in Obsidain Study Kit naming system
- */
-export function tryUsingInputBookMap(bookAndChapter: string, settings: PluginSettings) {
-	if (bookAndChapterRegEx.test(bookAndChapter)) {
-		// Valid chapter name
-		// eslint-disable-next-line prefer-const
-		let [, book, chapter] = bookAndChapter.match(bookAndChapterRegEx);
-		const convertedBook = settings.inputBookMap[book.toLowerCase()] ?? book;
-		return `${convertedBook} ${chapter}`;
+
+	// Try using input book mapping
+	// eslint-disable-next-line prefer-const
+	let [, book, chapter] = filenameCopy.match(bookAndChapterRegEx);
+	const convertedBook = settings.inputBookMap[book.toLowerCase()] ?? book;
+	filenameCopy = `${convertedBook} ${chapter}`;
+	tFile = app.metadataCache.getFirstLinkpathDest(filenameCopy, path);
+	if (tFile) {
+		return { fileName: filenameCopy, tFile };
 	}
-	return bookAndChapter;
+
+	// Try using "-" as separator
+	filenameCopy = `${convertedBook}-${chapter}`;
+	tFile = app.metadataCache.getFirstLinkpathDest(filenameCopy, path);
+	if (tFile) {
+		return { fileName: filenameCopy, tFile };
+	}
+
+	// Try using "-" as separator
+	if (chapter.length == 1) {
+		chapter = `0${chapter}`;
+	}
+	filenameCopy = `${convertedBook}-${chapter}`;
+	tFile = app.metadataCache.getFirstLinkpathDest(filenameCopy, path);
+	if (tFile) {
+		return { fileName: filenameCopy, tFile };
+	}
+	return { fileName: filename, tFile };
 }

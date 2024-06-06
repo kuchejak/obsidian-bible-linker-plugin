@@ -9,7 +9,7 @@ export const oneVerseRegEx = new RegExp(/([^,:#]+)[,#.:;]\s*(\d+)\s*$/);
 export const multipleVersesRegEx = new RegExp(/([^,:#]+)[,#.:;]\s*(\d+)\s*[-.=]\s*(\d+)\s*$/);
 
 // Book and chapter string
-export const bookAndChapterRegEx = /([^,:#]*\S)\s+(\d+)/
+export const bookAndChapterRegEx = /([^,:#]*\S)[-|\s]+(\d+)/
 
 // Multiple chapters, for example "Gen 1-3"
 export const multipleChaptersRegEx = /(\d*[^\d,:#]+)\s*(\d+)\s*-\s*(\d+)\s*$/
