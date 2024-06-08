@@ -1,4 +1,4 @@
-import {MarkdownView, Plugin} from 'obsidian';
+import {Editor, Plugin} from 'obsidian';
 import CopyVerseModal from 'src/modals/copy-verse-modal';
 import LinkVerseModal, {LinkType} from './modals/link-verse-modal';
 import {SettingsTab} from './settings';
@@ -118,11 +118,11 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 };
 
 
-function replaceRangeAndMoveCursor(str: string, view: MarkdownView) {
-	view.editor.replaceRange(str, view.editor.getCursor());
-	let offset = view.editor.posToOffset(view.editor.getCursor())
+function replaceRangeAndMoveCursor(str: string, editor: Editor) {
+	editor.replaceRange(str, editor.getCursor());
+	let offset = editor.posToOffset(editor.getCursor())
 	offset += str.length;
-	view.editor.setCursor(view.editor.offsetToPos(offset));
+	editor.setCursor(editor.offsetToPos(offset));
 }
 
 export default class BibleLinkerPlugin extends Plugin {
@@ -130,20 +130,20 @@ export default class BibleLinkerPlugin extends Plugin {
 
     // Opens modal for text copying
     openCopyModal = () => {
-        const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-        if (view) {
+		const editor = this.app.workspace.activeEditor?.editor
+        if (editor) {
             new CopyVerseModal(this.app, this.settings,
-                (str) => replaceRangeAndMoveCursor(str, view)
+                (str) => replaceRangeAndMoveCursor(str, editor)
 			).open();
         }
     }
 
     // Opens modal for creating obsidian links
     openObsidianLinkModal = () => {
-        const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-        if (view) {
+		const editor = this.app.workspace.activeEditor?.editor
+        if (editor) {
             new LinkVerseModal(this.app, this.settings,
-                (str) => replaceRangeAndMoveCursor(str, view)
+                (str) => replaceRangeAndMoveCursor(str, editor)
 			).open();
         }
     }
