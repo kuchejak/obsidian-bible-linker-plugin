@@ -9,6 +9,8 @@ Plugin for easier linking of multiple bible verses in Obsdian.md note taking app
 ## Copy and Link Bible verses command
 Copies given verses from your bible files and inserts obsidian links to them. This is the main command of the plugin, with many more features than the other one. 
 
+<img width="559" alt="image" src="https://github.com/kuchejak/obsidian-bible-linker-plugin/assets/94016085/9a4fb316-d44b-46f3-9017-a83fda712146">
+
 ### Example output (input: `Gen 1,1-3`)
 ```md
 >[[Gen-01#v1|Gen 1,1-3]] In the beginning, God created the heavens and the earth. The earth was formless and empty. Darkness was on the surface of the deep and God's Spirit was hovering over the surface of the waters. God said, "Let there be light," and there was light. [[Gen-01#v1|]][[Gen-01#v2|]][[Gen-01#v3|]]
@@ -61,12 +63,10 @@ Multiple translation support must be enabled in the settings, it is off by defau
 ## Link Bible verses command
 Simpler command that only creates obsidian links based on input. You can choose if you want standard links (e.g. `[[Gen-01#v1]]`), embedded links (e.g. `![[Gen-01#v1]]`) or links invisible in the preview mode (e.g. `[[Gen-01#v1|]]`). This command is less powerful, but it also has looser requirements for your bible files, so you can use it even when the copy command does not work.  
 
-![image](https://user-images.githubusercontent.com/94016085/160867853-5bff3b17-d8a7-4ec9-8672-eb1fa3acc88c.png)
-
+<img width="558" alt="image" src="https://github.com/kuchejak/obsidian-bible-linker-plugin/assets/94016085/9c271122-af70-40f7-b49f-604e45a44f11">
 
 ### Requirements 
 Basically no requirements, it just parses your input and creates links based on it. If it does not do what you want, look into the settings.
-
 
 ## Support
 If you want to support this plugin, star it on GitHub. Thank you.
@@ -76,3 +76,7 @@ Available through Obsidian Community plugins (Settings/Community plugins)
 
 ### Manual install
 Copy over `main.js`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=kuchejak/obsidian-bible-linker-plugin&type=Date)](https://star-history.com/#kuchejak/obsidian-bible-linker-plugin&Date)
