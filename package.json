@@ -1,6 +1,6 @@
 {
     "name": "obsidian-bible-linker",
-    "version": "1.5.4",
+    "version": "1.5.5",
     "description": "Obsidian bible linker plugin",
     "main": "main.js",
     "scripts": {
