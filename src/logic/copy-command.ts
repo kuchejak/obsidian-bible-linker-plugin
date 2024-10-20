@@ -172,8 +172,10 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
             if (settings.eachVersePrefix) {
                 versePrefix += settings.eachVersePrefix.replace(/{n}/g, (i - settings.verseOffset).toString());
                 versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
-				const splitPath = translationPath.split("/");
-				versePrefix = versePrefix.replace(/{t}/g, `${splitPath[splitPath.length - 2]}`);
+				if (settings.enableMultipleTranslations) {
+					const splitPath = translationPath.split("/");
+					versePrefix = versePrefix.replace(/{t}/g, `${splitPath[splitPath.length - 2]}`);
+				}
             }
             let verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
 
