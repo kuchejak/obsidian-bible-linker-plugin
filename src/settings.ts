@@ -77,7 +77,7 @@ export class SettingsTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName("Link postfix")
-            .setDesc("String inserted after biblical link, you can use \\n to insert newline.")
+            .setDesc("String inserted after biblical link, you can use \\n to insert newline. If you are using multiple translations \"{t}\" will insert the name of the one used.")
             .addText((inputBox) =>
                 inputBox
                     .setPlaceholder("Insert postfix here")

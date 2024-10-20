@@ -78,8 +78,12 @@ function getVerseText(verseNumber: number, headings: HeadingCache[], lines: stri
 /**
  * Replaces "\n" with newline character in given string (when user inputs "\n" in the settings it is automatically converted to "\\n" and does not work as newline)
  */
-function replaceNewline(input: string) {
-    return input.replace(/\\n/g, "\n",);
+function replacePlaceholdersInPostfix(input: string, translationPath: string) {
+	let result = input.replace(/\\n/g, "\n",);
+	if (translationPath != "" && translationPath != undefined) {
+		result = result.replace(/{t}/g, getTranslationNameFromPath(translationPath));
+	}
+	return result;
 }
 
 /**
@@ -151,7 +155,7 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     let postfix = "", res = "", pathToUse = "";
     if (!linkOnly) {
         res = settings.prefix;
-        postfix = settings.postfix ? replaceNewline(settings.postfix) : " ";
+        postfix = settings.postfix ? replacePlaceholdersInPostfix(settings.postfix, translationPath) : " ";
     }
     if (settings.enableMultipleTranslations) {
         if (settings.translationLinkingType !== "main") // link the translation that is currently being used
