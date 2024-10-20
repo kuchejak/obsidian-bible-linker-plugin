@@ -115,29 +115,17 @@ function getFileFolderInTranslation(app: App, filename: string, translation: str
 }
 
 async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, translationPath: string, linkOnly: boolean, verbose: boolean) {
-	console.log(`118 b:${beginVerse} e:${endVerse}`)
     const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename, settings);
-	console.log(`119 b:${beginVerse} e:${endVerse}`)
     const file = app.vault.read(tFile)
-	console.log(`120 b:${beginVerse} e:${endVerse}`)
     const lines = (await file).split(/\r?\n/)
-	console.log(`121 b:${beginVerse} e:${endVerse}`)
     const verseHeadingLevel = settings.verseHeadingLevel
-	console.log(`122 b:${beginVerse} e:${endVerse}`)
     const headings = app.metadataCache.getFileCache(tFile).headings.filter(heading => !verseHeadingLevel || heading.level === verseHeadingLevel)
-	console.log(`123 b:${beginVerse} e:${endVerse}`)
     const beginVerseNoOffset = beginVerse
-	console.log(`124 b:${beginVerse} e:${endVerse}`)
     beginVerse += settings.verseOffset
-	console.log(`125 b:${beginVerse} e:${endVerse}`)
     endVerse += settings.verseOffset
-	console.log(`126 b:${beginVerse} e:${endVerse}`)
 	const nrOfVerses = headings.length - 1;
-	console.log(`127 b:${beginVerse} e:${endVerse}`)
 	const maxVerse = endVerse < nrOfVerses ? endVerse : nrOfVerses; // if endverse is bigger than chapter allows, it is lowered to maximum
-	console.log(`128 b:${beginVerse} e:${endVerse}`)
     const maxVerseNoOffset = maxVerse - settings.verseOffset;
-	console.log(`129 b:${beginVerse} e:${endVerse}`)
 
 
     if (beginVerse > maxVerse) {
@@ -184,6 +172,8 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
             if (settings.eachVersePrefix) {
                 versePrefix += settings.eachVersePrefix.replace(/{n}/g, (i - settings.verseOffset).toString());
                 versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
+				const splitPath = translationPath.split("/");
+				versePrefix = versePrefix.replace(/{t}/g, `${splitPath[splitPath.length - 2]}`);
             }
             let verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
 
