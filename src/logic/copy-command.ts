@@ -83,6 +83,16 @@ function replaceNewline(input: string) {
 }
 
 /**
+ * Returns the name of the translation from the path to it.
+ * For example for path "personal/bible/NIV/" it will return "NIV"
+ * @param path
+ */
+export function getTranslationNameFromPath(path: string) {
+	const splitPath = path.split("/");
+	return splitPath[splitPath.length - 2];
+}
+
+/**
  * Replaces the given book with its display value defined in the settings. If no mapping exists, the original value is returned.
  * @param book Book that should be replaced
  * @param settings Plugin's settings
@@ -173,8 +183,7 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
                 versePrefix += settings.eachVersePrefix.replace(/{n}/g, (i - settings.verseOffset).toString());
                 versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
 				if (settings.enableMultipleTranslations) {
-					const splitPath = translationPath.split("/");
-					versePrefix = versePrefix.replace(/{t}/g, `${splitPath[splitPath.length - 2]}`);
+					versePrefix = versePrefix.replace(/{t}/g, `${getTranslationNameFromPath(translationPath)}`);
 				}
             }
             let verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);

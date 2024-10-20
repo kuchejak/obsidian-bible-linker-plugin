@@ -1,6 +1,6 @@
 import { App, ButtonComponent, Modal, Setting } from "obsidian";
 import { PluginSettings } from "../main";
-import { getTextOfVerses } from "../logic/copy-command";
+import {getTextOfVerses, getTranslationNameFromPath} from "../logic/copy-command";
 
 /**
  * Async function for fetching preview
@@ -117,8 +117,7 @@ export default class CopyVerseModal extends Modal {
 				transationPicker.addButton((btn) => {
 					buttons.push(btn);
 					buttonPathMap.set(btn, path);
-					let splittedPath = path.split("/");
-					btn.setButtonText(splittedPath[splittedPath.length - 2]);
+					btn.setButtonText(getTranslationNameFromPath(path));
 				});
 
 				buttons.forEach((btn) => {
