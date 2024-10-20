@@ -199,13 +199,12 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
             || settings.translationLinkingType === "used")) // Only linking one translation - already linked 
         return res;
 
-    if (settings.newLines && !linkOnly) {
-        res += `\n${settings.prefix}`;
-    }
 
     const lastVerseToLink = settings.linkEndVerse ? maxVerse - 1 : maxVerse;
-    for (let i = beginVerse + 1; i <= lastVerseToLink; i++) { // beginVerse + 1 because link to first verse is already inserted before the text
+    for (let i = beginVerse; i <= lastVerseToLink; i++) { // beginVerse + 1 because link to first verse is already inserted before the text
         if (!settings.enableMultipleTranslations) {
+			if (i == beginVerse) continue; // already linked in the first link before text
+			res += `\n${settings.prefix}`;
             res += `[[${fileName}#${headings[i].heading}|]]`
         }
         else { // multiple translations 
@@ -223,6 +222,7 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
                         getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first(), settings)];
                     }
                     else {
+						if (i == beginVerse) continue; // already linked in the first link before text
                         translationPathsToUse = [getFileFolderInTranslation(app, fileName, translationPath, settings)];
                     }
                     break;
@@ -232,6 +232,9 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
                 default:
                     break;
             }
+			if (translationPathsToUse.length === 0) return;
+
+			res += `\n${settings.prefix}`;
             translationPathsToUse.forEach((translationPath) => {
                 res += `[[${translationPath}/${fileName}#${headings[i].heading}|]]`
             })
