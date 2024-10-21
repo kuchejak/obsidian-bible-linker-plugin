@@ -2,6 +2,7 @@ import { App, HeadingCache, Notice, TFile } from "obsidian";
 import { PluginSettings } from "../main";
 import {bookAndChapterRegEx, escapeForRegex, isOBSKFileRegEx} from "../utils/regexes";
 import { capitalize, getFileByFilename as getTFileByFilename, parseUserVerseInput } from "./common";
+import {getConstrainedTypeAtLocation} from "@typescript-eslint/type-utils";
 
 /**
  * Converts biblical reference to text of given verses
@@ -211,15 +212,15 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
     if ((beginVerse == maxVerse || (settings.linkEndVerse && beginVerse == maxVerse - 1)) // No need to add another link, when only one verse is being linked
         && (!settings.enableMultipleTranslations
             || settings.translationLinkingType === "main"
-            || settings.translationLinkingType === "used")) // Only linking one translation - already linked 
+            || settings.translationLinkingType === "used"
+			|| (settings.translationLinkingType === "usedAndMain" && translationPath === settings.parsedTranslationPaths.first())))
         return res;
 
-
+	res += `\n${settings.prefix}`;
     const lastVerseToLink = settings.linkEndVerse ? maxVerse - 1 : maxVerse;
     for (let i = beginVerse; i <= lastVerseToLink; i++) { // beginVerse + 1 because link to first verse is already inserted before the text
         if (!settings.enableMultipleTranslations) {
 			if (i == beginVerse) continue; // already linked in the first link before text
-			res += `\n${settings.prefix}`;
             res += `[[${fileName}#${headings[i].heading}|]]`
         }
         else { // multiple translations 
@@ -249,7 +250,6 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
             }
 			if (translationPathsToUse.length === 0) return;
 
-			res += `\n${settings.prefix}`;
             translationPathsToUse.forEach((translationPath) => {
                 res += `[[${translationPath}/${fileName}#${headings[i].heading}|]]`
             })
