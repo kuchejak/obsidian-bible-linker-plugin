@@ -130,68 +130,67 @@ function getFileFolderInTranslation(app: App, filename: string, translation: str
 }
 
 async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, translationPath: string, linkOnly: boolean, verbose: boolean) {
-    const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename, settings);
-    const file = app.vault.read(tFile)
-    const lines = (await file).split(/\r?\n/)
-    const verseHeadingLevel = settings.verseHeadingLevel
-    const headings = app.metadataCache.getFileCache(tFile).headings.filter(heading => !verseHeadingLevel || heading.level === verseHeadingLevel)
-    const beginVerseNoOffset = beginVerse
-    beginVerse += settings.verseOffset
-    endVerse += settings.verseOffset
+	const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename, settings);
+	const file = app.vault.read(tFile)
+	const lines = (await file).split(/\r?\n/)
+	const verseHeadingLevel = settings.verseHeadingLevel
+	const headings = app.metadataCache.getFileCache(tFile).headings.filter(heading => !verseHeadingLevel || heading.level === verseHeadingLevel)
+	const beginVerseNoOffset = beginVerse
+	beginVerse += settings.verseOffset
+	endVerse += settings.verseOffset
 	const nrOfVerses = headings.length - 1;
 	const maxVerse = endVerse < nrOfVerses ? endVerse : nrOfVerses; // if endverse is bigger than chapter allows, it is lowered to maximum
-    const maxVerseNoOffset = maxVerse - settings.verseOffset;
+	const maxVerseNoOffset = maxVerse - settings.verseOffset;
 
 
-    if (beginVerse > maxVerse) {
-        if (verbose) {
-            new Notice("Begin verse is bigger than end verse or chapter maximum")
-        }
-        throw "Begin verse is bigger than end verse or chapter maximum"
-    }
+	if (beginVerse > maxVerse) {
+		if (verbose) {
+			new Notice("Begin verse is bigger than end verse or chapter maximum")
+		}
+		throw "Begin verse is bigger than end verse or chapter maximum"
+	}
 
 
-
-    // 1 - Link to verses
-    let postfix = "", res = "", pathToUse = "";
-    if (!linkOnly) {
-        res = settings.prefix;
-        postfix = settings.postfix ? replacePlaceholdersInPostfix(settings.postfix, translationPath) : " ";
-    }
-    if (settings.enableMultipleTranslations) {
-        if (settings.translationLinkingType !== "main") // link the translation that is currently being used
-            pathToUse = getFileFolderInTranslation(app, fileName, translationPath, settings);
-        else { // link main translation
-            pathToUse = getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first(), settings);
-        }
-    }
+	// 1 - Link to verses
+	let postfix = "", res = "", pathToUse = "";
+	if (!linkOnly) {
+		res = settings.prefix;
+		postfix = settings.postfix ? replacePlaceholdersInPostfix(settings.postfix, translationPath) : " ";
+	}
+	if (settings.enableMultipleTranslations) {
+		if (settings.translationLinkingType !== "main") // link the translation that is currently being used
+			pathToUse = getFileFolderInTranslation(app, fileName, translationPath, settings);
+		else { // link main translation
+			pathToUse = getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first(), settings);
+		}
+	}
 
 	if (settings.newLines && !linkOnly) {
 		res += `${settings.firstLinePrefix}`
 	}
 
-    if (beginVerse === maxVerse) {
-        res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
-    } else if (settings.linkEndVerse) {
-        res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
-        res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[maxVerse].heading}|${maxVerseNoOffset}]]${postfix}`; // [[Gen 1#3|3]]
-    } else {
-        res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${maxVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1-3]]
-    }
+	if (beginVerse === maxVerse) {
+		res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.oneVerseNotation}${beginVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1.1]]
+	} else if (settings.linkEndVerse) {
+		res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-]]` // [[Gen 1#1|Gen 1,1-]]
+		res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[maxVerse].heading}|${maxVerseNoOffset}]]${postfix}`; // [[Gen 1#3|3]]
+	} else {
+		res += `[[${pathToUse ? pathToUse + "/" : ""}${fileName}#${headings[beginVerse].heading}|${bookAndChapterOutput}${settings.multipleVersesNotation}${beginVerseNoOffset}-${maxVerseNoOffset}]]${postfix}` // [[Gen 1#1|Gen 1,1-3]]
+	}
 
-    // 2 - Text of verses
-    if (!linkOnly) {
-        for (let i = beginVerse; i <= maxVerse; i++) {
-            let versePrefix = "";
-            const versePostfix = settings.insertSpace ? " " : "";
-            if (settings.eachVersePrefix) {
-                versePrefix += settings.eachVersePrefix.replace(/{n}/g, (i - settings.verseOffset).toString());
-                versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
+	// 2 - Text of verses
+	if (!linkOnly) {
+		for (let i = beginVerse; i <= maxVerse; i++) {
+			let versePrefix = "";
+			const versePostfix = settings.insertSpace ? " " : "";
+			if (settings.eachVersePrefix) {
+				versePrefix += settings.eachVersePrefix.replace(/{n}/g, (i - settings.verseOffset).toString());
+				versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
 				if (settings.enableMultipleTranslations) {
 					versePrefix = versePrefix.replace(/{t}/g, `${getTranslationNameFromPath(translationPath)}`);
 				}
-            }
-            let verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
+			}
+			let verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
 
 			if (settings.commentStart !== "" && settings.commentEnd !== "") {
 				const escapedStart = escapeForRegex(settings.commentStart);
@@ -199,24 +198,26 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
 				const replaceRegex = new RegExp(`${escapedStart}.*?${escapedEnd}`, 'gs');
 				verseText = verseText.replace(replaceRegex, '');
 			}
-            if (settings.newLines) {
-                res += "\n" + settings.prefix + versePrefix + verseText;
-            } else {
-                res += versePrefix + verseText + versePostfix;
-            }
-        }
-    }
+			if (settings.newLines) {
+				res += "\n" + settings.prefix + versePrefix + verseText;
+			} else {
+				res += versePrefix + verseText + versePostfix;
+			}
+		}
+	}
 
-    // 3 - Invisible links
-    if (!settings.useInvisibleLinks) return res;
-    if ((beginVerse == maxVerse || (settings.linkEndVerse && beginVerse == maxVerse - 1)) // No need to add another link, when only one verse is being linked
-        && (!settings.enableMultipleTranslations
-            || settings.translationLinkingType === "main"
-            || settings.translationLinkingType === "used"
+	// 3 - Invisible links
+	if (!settings.useInvisibleLinks) return res;
+	if ((beginVerse == maxVerse || (settings.linkEndVerse && beginVerse == maxVerse - 1)) // No need to add another link, when only one verse is being linked
+		&& (!settings.enableMultipleTranslations
+			|| settings.translationLinkingType === "main"
+			|| settings.translationLinkingType === "used"
 			|| (settings.translationLinkingType === "usedAndMain" && translationPath === settings.parsedTranslationPaths.first())))
-        return res;
+		return res;
 
-	res += `\n${settings.prefix}`;
+	if (settings.newLines) {
+		res += `\n${settings.prefix}`;
+	}
     const lastVerseToLink = settings.linkEndVerse ? maxVerse - 1 : maxVerse;
     for (let i = beginVerse; i <= lastVerseToLink; i++) { // beginVerse + 1 because link to first verse is already inserted before the text
         if (!settings.enableMultipleTranslations) {
