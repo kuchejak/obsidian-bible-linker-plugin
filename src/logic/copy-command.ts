@@ -231,6 +231,7 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
                     translationPathsToUse = settings.parsedTranslationPaths.map((tr) => getFileFolderInTranslation(app, fileName, tr, settings))
                     break;
                 case "used":
+					if (i == beginVerse) continue; // already linked in the first link before text
                     translationPathsToUse = [getFileFolderInTranslation(app, fileName, translationPath, settings)]
                     break;
                 case "usedAndMain":
@@ -244,6 +245,7 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
                     }
                     break;
                 case "main":
+					if (i == beginVerse) continue; // already linked in the first link before text
                     translationPathsToUse = [getFileFolderInTranslation(app, fileName, settings.parsedTranslationPaths.first(), settings)];
                     break;
                 default:
