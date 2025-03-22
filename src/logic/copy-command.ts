@@ -2,6 +2,7 @@ import { App, HeadingCache, Notice, TFile } from "obsidian";
 import { PluginSettings } from "../main";
 import {bookAndChapterRegEx, escapeForRegex, isOBSKFileRegEx} from "../utils/regexes";
 import { capitalize, getFileByFilename as getTFileByFilename, parseUserVerseInput } from "./common";
+import {getConstrainedTypeAtLocation} from "@typescript-eslint/type-utils";
 
 /**
  * Converts biblical reference to text of given verses
