@@ -61,7 +61,7 @@ function getVerseText(verseNumber: number, headings: HeadingCache[], lines: stri
     // eslint-disable-next-line no-constant-condition
     while (true) {
         line = lines[headingLine + i]; // get next line
-        if (/^#/.test(line)) {
+        if (/^#/.test(line) || (!line && !isFirst)) {
             break; // heading line (next verse) or empty line after verse => do not continue
         }
         i++;
@@ -193,11 +193,9 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
 			let verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
 
 			if (settings.commentStart !== "" && settings.commentEnd !== "") {
-				console.log(`verseText = ${verseText}, commentStart = ${settings.commentStart}, commentEnd = ${settings.commentEnd}`)
 				const escapedStart = escapeForRegex(settings.commentStart);
 				const escapedEnd = escapeForRegex(settings.commentEnd);
-				// const replaceRegex = new RegExp(`${escapedStart}.*?${escapedEnd}`, 'gs');
-				const replaceRegex = new RegExp(`${escapedStart}[\\s\\S]*?${escapedEnd}`, 'g');
+				const replaceRegex = new RegExp(`${escapedStart}.*?${escapedEnd}`, 'gs');
 				verseText = verseText.replace(replaceRegex, '');
 			}
 			if (settings.newLines) {
