@@ -2,7 +2,7 @@ import { App, HeadingCache, Notice, TFile } from "obsidian";
 import { PluginSettings } from "../main";
 import {bookAndChapterRegEx, escapeForRegex, isOBSKFileRegEx} from "../utils/regexes";
 import { capitalize, getFileByFilename as getTFileByFilename, parseUserVerseInput } from "./common";
-import {getConstrainedTypeAtLocation} from "@typescript-eslint/type-utils";
+import {numbersToSuperscript} from "../utils/functions";
 
 /**
  * Converts biblical reference to text of given verses
@@ -184,7 +184,8 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
 			let versePrefix = "";
 			const versePostfix = settings.insertSpace ? " " : "";
 			if (settings.eachVersePrefix) {
-				versePrefix += settings.eachVersePrefix.replace(/{n}/g, (i - settings.verseOffset).toString());
+				versePrefix += settings.eachVersePrefix.replace(/{n}/g, `${i - settings.verseOffset}`);
+				versePrefix = versePrefix.replace(/{u}/g, numbersToSuperscript(`${i - settings.verseOffset}`));
 				versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
 				if (settings.enableMultipleTranslations) {
 					versePrefix = versePrefix.replace(/{t}/g, `${getTranslationNameFromPath(translationPath)}`);
