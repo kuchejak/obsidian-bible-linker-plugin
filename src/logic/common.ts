@@ -8,7 +8,7 @@ import {
 	oneVerseRegEx,
 } from "../utils/regexes";
 import { App, Notice } from "obsidian";
-import {PluginSettings} from "../main";
+import { PluginSettings } from "../main";
 
 /**
  * Capitalizes given string, taking leading numbers into account
@@ -129,7 +129,7 @@ export function getFileByFilename(app: App, filename: string, path: string, sett
 		return { fileName: filenameCopy, tFile };
 	}
 
-	// Try using "-" as separator
+	// Try adding leading 0
 	if (chapter.length == 1) {
 		chapter = `0${chapter}`;
 	}
