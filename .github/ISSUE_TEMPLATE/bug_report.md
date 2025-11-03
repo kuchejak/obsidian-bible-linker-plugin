@@ -10,7 +10,7 @@ assignees: ''
 A clear and concise description of what the bug is.
 
 ## Which Command Are You Using?
-<!-- Please select one -->
+<!-- Please select one by changing [ ] to [x] -->
 - [ ] **Copy and Link Bible verses command**
 - [ ] **Link Bible verses command**
 
