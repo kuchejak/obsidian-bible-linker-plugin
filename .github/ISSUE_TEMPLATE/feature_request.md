@@ -10,7 +10,7 @@ assignees: ''
 A clear and concise description of the feature you'd like to see added.
 
 ## Which Command Would This Apply To?
-<!-- Please select one or both -->
+<!-- Please select one or both by changing [ ] to [x]-->
 - [ ] **Copy and Link Bible verses command**
 - [ ] **Link Bible verses command**
 
