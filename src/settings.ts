@@ -101,6 +101,18 @@ export class SettingsTab extends PluginSettingTab {
                     })
             )
 
+		new Setting(containerEl)
+			.setName("Each verse postfix")
+			.setDesc("String inserted at the end of every copied verse. You can use \"{n}\" where you want number of given verse inserted, for example \"**{n}** \" will make each verse start with bold verse number. You can also use \"{f}\" to insert name of the corresponding file (for example to create obsidian links). If you are using multiple translations \"{t}\" will insert the name of the one used. \"{u}\" will insert the number of the verse as unicode superscript. Leave empty for no postfix.")
+			.addText((inputBox) =>
+				inputBox
+					.setPlaceholder("Insert postfix here")
+					.setValue(this.plugin.settings.eachVersePostfix)
+					.onChange(async (value) => {
+						this.plugin.settings.eachVersePostfix = value;
+						await this.plugin.saveSettings();
+					})
+			)
 
         containerEl.createEl("h4", { text: "Links" });
 
@@ -174,7 +186,7 @@ export class SettingsTab extends PluginSettingTab {
 		else {
 			new Setting(containerEl)
 				.setName("Insert space between verses?")
-				.setDesc("Should space be inserted between verses? (Only applied when Put each verse on a new line? is set to false. Useful for languages such as Chinese.)")
+				.setDesc("Should space be inserted between verses? (Only applied when Put each verse on a new line? is set to false. Useful for languages such as Chinese.) See also each verse postfix setting for more options.")
 				.setDisabled(!this.plugin.settings.newLines)
 				.addToggle((toggle) =>
 					toggle

@@ -128,6 +128,26 @@ function getFileFolderInTranslation(app: App, filename: string, translation: str
     return tFileInfo.tFile.parent.path;
 }
 
+/**
+ * Replaces special characters with the current verse information (useful for verse prefix, postfix etc.)
+ * ```
+ * {n} -> verse number
+ * {u} -> verse number (unicode superscript)
+ * {f} -> file name
+ * {t} -> name of translation (if multiple translations are used)
+ * ```
+ */
+function formatVerseInformation(stringToFormat: string, settings: PluginSettings, i: number, fileName: string, translationPath: string) {
+	let output = "";
+	output += stringToFormat.replace(/{n}/g, `${i - settings.verseOffset}`);
+	output = output.replace(/{u}/g, numbersToSuperscript(`${i - settings.verseOffset}`));
+	output = output.replace(/{f}/g, `${fileName}`);
+	if (settings.enableMultipleTranslations) {
+		output = output.replace(/{t}/g, `${getTranslationNameFromPath(translationPath)}`);
+	}
+	return output;
+}
+
 async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginVerse: number, endVerse: number, settings: PluginSettings, translationPath: string, linkOnly: boolean, verbose: boolean) {
 	const bookAndChapterOutput = createBookAndChapterOutput(tFile.basename, settings);
 	const file = app.vault.read(tFile)
@@ -181,16 +201,15 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
 	if (!linkOnly) {
 		for (let i = beginVerse; i <= maxVerse; i++) {
 			let versePrefix = "";
-			const versePostfix = settings.insertSpace ? " " : "";
+			let versePostfix = "";
+			const verseSpace = settings.insertSpace ? " " : "";
 			if (settings.eachVersePrefix) {
-				versePrefix += settings.eachVersePrefix.replace(/{n}/g, `${i - settings.verseOffset}`);
-				versePrefix = versePrefix.replace(/{u}/g, numbersToSuperscript(`${i - settings.verseOffset}`));
-				versePrefix = versePrefix.replace(/{f}/g, `${fileName}`);
-				if (settings.enableMultipleTranslations) {
-					versePrefix = versePrefix.replace(/{t}/g, `${getTranslationNameFromPath(translationPath)}`);
-				}
+				versePrefix = formatVerseInformation(settings.eachVersePrefix, settings, i, fileName, translationPath);
 			}
 			let verseText = getVerseText(i, headings, lines, settings.newLines, settings.prefix);
+			if (settings.eachVersePostfix) {
+				versePostfix = formatVerseInformation(settings.eachVersePostfix, settings, i, fileName, translationPath);
+			}
 
 			if (settings.commentStart !== "" && settings.commentEnd !== "") {
 				const escapedStart = escapeForRegex(settings.commentStart);
@@ -199,9 +218,9 @@ async function createCopyOutput(app: App, tFile: TFile, fileName: string, beginV
 				verseText = verseText.replace(replaceRegex, '');
 			}
 			if (settings.newLines) {
-				res += "\n" + settings.prefix + versePrefix + verseText;
+				res += "\n" + settings.prefix + versePrefix + verseText + versePostfix;
 			} else {
-				res += versePrefix + verseText + versePostfix;
+				res += versePrefix + verseText + versePostfix + verseSpace;
 			}
 		}
 	}

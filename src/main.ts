@@ -13,6 +13,7 @@ export interface PluginSettings {
     prefix: string;
     postfix: string;
     eachVersePrefix: string;
+	eachVersePostfix: string;
 
     // Links
     linkEndVerse: boolean;
@@ -70,6 +71,7 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
     prefix: "",
     postfix: "",
     eachVersePrefix: "",
+	eachVersePostfix: "",
 
     // Links
     linkEndVerse: false,
