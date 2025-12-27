@@ -48,7 +48,7 @@ function getVerseText(verseNumber: number, headings: HeadingCache[], lines: stri
 
     const headingLine = headings[verseNumber].position.start.line;
     if (headingLine + 1 >= lines.length) { // out of range
-        new Notice("Logical error - please create issue on plugin's GitHub with your input and the file you were referencing. Thank you!")
+        new Notice("Unexpected end of file. Is there an empty verse at the end?")
         throw `HeadingLine ${headingLine + 1} is out of range of lines with length ${lines}`
     }
 
@@ -58,8 +58,7 @@ function getVerseText(verseNumber: number, headings: HeadingCache[], lines: stri
     let i = 1;
     let isFirst = true;
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+    while (headingLine + i < lines.length) {
         line = lines[headingLine + i]; // get next line
         if (/^#/.test(line) || (!line && !isFirst)) {
             break; // heading line (next verse) or empty line after verse => do not continue
