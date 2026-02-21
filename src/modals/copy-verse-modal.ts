@@ -6,6 +6,7 @@ import {getTextOfVerses, getTranslationNameFromPath} from "../logic/copy-command
  * Async function for fetching preview
  */
 async function setPreviewText(
+	app: App,
 	previewEl: HTMLTextAreaElement,
 	userInput: string,
 	pluginSettings: PluginSettings,
@@ -14,7 +15,7 @@ async function setPreviewText(
 ) {
 	try {
 		const res = await getTextOfVerses(
-			this.app,
+			app,
 			userInput,
 			pluginSettings,
 			translationPath,
@@ -79,6 +80,7 @@ export default class CopyVerseModal extends Modal {
 
 		const refreshPreview = () => {
 			setPreviewText(
+				this.app,
 				previewEl,
 				this.userInput,
 				this.pluginSettings,
@@ -118,9 +120,6 @@ export default class CopyVerseModal extends Modal {
 					buttons.push(btn);
 					buttonPathMap.set(btn, path);
 					btn.setButtonText(getTranslationNameFromPath(path));
-				});
-
-				buttons.forEach((btn) => {
 					// make sure that only one is selected at a time
 					btn.onClick(() => {
 						buttons.forEach((b) => b.removeCta()); // remove CTA from all buttons
@@ -129,11 +128,11 @@ export default class CopyVerseModal extends Modal {
 						refreshPreview();
 					});
 				});
-
-				// preselect the first button/trnaslation
-				buttons.first().setCta();
-				this.translationPath = buttonPathMap.get(buttons.first());
 			});
+
+			// preselect the first button/translation
+			buttons.first().setCta();
+			this.translationPath = buttonPathMap.get(buttons.first());
 		}
 
 		// add link-only options
