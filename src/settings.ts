@@ -1,5 +1,5 @@
 import {App, Notice, PluginSettingTab, Setting} from "obsidian";
-import BibleLinkerPlugin from "./main";
+import BibleLinkerPlugin, {ProfileSettings, SettingsProfile} from "./main";
 import {LinkType} from "./modals/link-verse-modal";
 
 /**
@@ -13,11 +13,127 @@ export class SettingsTab extends PluginSettingTab {
         this.plugin = plugin;
     }
 
+    /** Extract only the profile-relevant settings (exclude profile management fields) */
+    private extractProfileSettings(): ProfileSettings {
+        const { profiles, activeProfileName, ...rest } = this.plugin.settings;
+        return rest;
+    }
+
     display() {
         const { containerEl } = this;
 
         containerEl.empty();
 
+        // ── Profiles ────────────────────────────────────────────────────────────
+        containerEl.createEl("h1", { text: "Profiles" });
+        containerEl.createEl("p", {
+            text: "Save and switch between named sets of settings. Selecting a profile immediately loads its settings.",
+        });
+
+        const profiles = this.plugin.settings.profiles;
+        const activeProfileName = this.plugin.settings.activeProfileName;
+
+        // Switch / save-to / delete active profile
+        const switchSetting = new Setting(containerEl)
+            .setName("Active profile")
+            .setDesc('Select a saved profile to load its settings, or choose "(no profile)" to use settings directly.')
+            .addDropdown((dropdown) => {
+                dropdown.addOption("", "(no profile)");
+                profiles.forEach((p) => dropdown.addOption(p.name, p.name));
+                dropdown.setValue(activeProfileName ?? "");
+                dropdown.onChange(async (value) => {
+                    if (value === "") {
+                        this.plugin.settings.activeProfileName = "";
+                    } else {
+                        const profile = profiles.find((p) => p.name === value);
+                        if (profile) {
+                            const { name, ...profileSettings } = profile;
+                            Object.assign(this.plugin.settings, profileSettings);
+                            this.plugin.settings.activeProfileName = value;
+                        }
+                    }
+                    await this.plugin.saveSettings();
+                    this.display();
+                });
+            });
+
+        if (activeProfileName) {
+            switchSetting.addButton((button) =>
+                button
+                    .setButtonText("Save to profile")
+                    .setTooltip("Overwrite the active profile with current settings")
+                    .onClick(async () => {
+                        const idx = this.plugin.settings.profiles.findIndex(
+                            (p) => p.name === activeProfileName
+                        );
+                        if (idx !== -1) {
+                            this.plugin.settings.profiles[idx] = {
+                                ...this.extractProfileSettings(),
+                                name: activeProfileName,
+                            };
+                            await this.plugin.saveSettings();
+                            new Notice(`Profile "${activeProfileName}" saved.`);
+                        }
+                    })
+            );
+
+            switchSetting.addButton((button) =>
+                button
+                    .setButtonText("Delete")
+                    .setTooltip("Delete the active profile")
+                    .setWarning()
+                    .onClick(async () => {
+                        this.plugin.settings.profiles =
+                            this.plugin.settings.profiles.filter(
+                                (p) => p.name !== activeProfileName
+                            );
+                        this.plugin.settings.activeProfileName = "";
+                        await this.plugin.saveSettings();
+                        this.display();
+                        new Notice(`Profile "${activeProfileName}" deleted.`);
+                    })
+            );
+        }
+
+        // Create a new profile from current settings
+        let newProfileName = "";
+        new Setting(containerEl)
+            .setName("Create new profile")
+            .setDesc("Save the current settings as a new named profile.")
+            .addText((input) =>
+                input
+                    .setPlaceholder("Profile name")
+                    .onChange((value) => {
+                        newProfileName = value;
+                    })
+            )
+            .addButton((button) =>
+                button
+                    .setButtonText("Create")
+                    .setCta()
+                    .onClick(async () => {
+                        const trimmed = newProfileName.trim();
+                        if (!trimmed) {
+                            new Notice("Please enter a profile name.");
+                            return;
+                        }
+                        if (this.plugin.settings.profiles.find((p) => p.name === trimmed)) {
+                            new Notice(`A profile named "${trimmed}" already exists.`);
+                            return;
+                        }
+                        const newProfile: SettingsProfile = {
+                            ...this.extractProfileSettings(),
+                            name: trimmed,
+                        };
+                        this.plugin.settings.profiles.push(newProfile);
+                        this.plugin.settings.activeProfileName = trimmed;
+                        await this.plugin.saveSettings();
+                        this.display();
+                        new Notice(`Profile "${trimmed}" created.`);
+                    })
+            );
+
+        // ── Copy and Link ────────────────────────────────────────────────────────
         containerEl.createEl("h1", { text: "Copy and Link Bible verses command" });
         containerEl.createEl("h4", { text: "Functional" });
 

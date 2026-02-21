@@ -3,7 +3,8 @@ import CopyVerseModal from 'src/modals/copy-verse-modal';
 import LinkVerseModal, {LinkType} from './modals/link-verse-modal';
 import {SettingsTab} from './settings';
 
-export interface PluginSettings {
+// Settings that can be saved in a profile (all settings except profile management fields)
+export interface ProfileSettings {
     // COPY
     // Functional
     verseOffset: number;
@@ -59,6 +60,16 @@ export interface PluginSettings {
 
 	// Misc
 	verifyFilesWhenLinking: boolean;
+}
+
+export interface SettingsProfile extends ProfileSettings {
+    name: string;
+}
+
+export interface PluginSettings extends ProfileSettings {
+    // Profiles
+    profiles: SettingsProfile[];
+    activeProfileName: string;
 }
 
 const DEFAULT_SETTINGS: Partial<PluginSettings> = {
@@ -117,6 +128,10 @@ const DEFAULT_SETTINGS: Partial<PluginSettings> = {
 
 	// Misc
 	verifyFilesWhenLinking: false,
+
+	// Profiles
+	profiles: [],
+	activeProfileName: "",
 };
 
 
